@@ -12,3 +12,9 @@ type Users struct {
 	EncryptedPwd string `db:"password"`
 	Errors       map[string]string
 }
+
+// Sessions -->
+type Sessions struct {
+	ID      int
+	Session string
+}

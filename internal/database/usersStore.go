@@ -45,7 +45,6 @@ func (us *UsersStore) FindByUsername(username string) (*model.Users, error) {
 
 // FindByEmail ...
 func (us *UsersStore) FindByEmail(email string) (*model.Users, error) {
-	fmt.Println(email)
 	u := &model.Users{}
 	if err := us.database.db.QueryRow("SELECT id, email, password FROM Users where email = ?", email).Scan(
 		&u.ID,

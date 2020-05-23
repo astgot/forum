@@ -1,7 +1,6 @@
 package server
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/astgot/forum/internal/model"
@@ -12,7 +11,7 @@ func (s *Server) ConfigureRouter() {
 
 	s.mux.HandleFunc("/", s.MainHandle())
 	s.mux.HandleFunc("/signup", s.SignupHandle())
-	s.mux.Handle("/login", s.LoginHandle())
+	s.mux.HandleFunc("/login", s.LoginHandle())
 	s.mux.HandleFunc("/confirmation", ConfirmHandler)
 	return
 }
@@ -26,7 +25,18 @@ func (s *Server) MainHandle() http.HandlerFunc {
 			http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
-		io.WriteString(w, "<b>YO Wazzup!!!</b>")
+		c, err := r.Cookie("user")
+		if err != nil {
+			c = &http.Cookie{
+				Name: "guest", 
+				Value:
+			}
+			http.SetCookie(w, )
+		}
+		if err := tpl.ExecuteTemplate(w, "main.html", nil); err != nil {
+			http.Error(w, "Sorry, something went wrong", http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
