@@ -7,8 +7,8 @@ type Users struct {
 	Lastname     string `db:"lastname"`
 	Username     string `db:"username"`
 	Email        string `db:"email"`
-	Password     string `db:"password"`
+	Password     string
 	ConfirmPwd   string
-	EncryptedPwd string
+	EncryptedPwd string `db:"password"`
 	Errors       map[string]string
 }

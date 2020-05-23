@@ -44,8 +44,26 @@ func (u *Users) Validate() bool {
 	return len(u.Errors) == 0
 }
 
-// HashPwd ...
-func HashPwd(pwd string) string {
+// HashPassword ...
+func HashPassword(pwd string) string {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.MinCost)
 	return string(hash)
+}
+
+// UnameOrEmail -->
+func UnameOrEmail(query string) bool {
+	for _, v := range query {
+		if v == '@' {
+			return true
+		}
+	}
+	return false
+}
+
+// ComparePassword --> Decrypt Password
+func ComparePassword(hashpwd, pwd string) bool {
+	if err := bcrypt.CompareHashAndPassword([]byte(hashpwd), []byte(pwd)); err != nil {
+		return false
+	}
+	return true
 }

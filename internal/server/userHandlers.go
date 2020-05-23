@@ -4,7 +4,6 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/astgot/forum/internal/database"
 	"github.com/astgot/forum/internal/model"
 )
 
@@ -13,6 +12,7 @@ func (s *Server) ConfigureRouter() {
 
 	s.mux.HandleFunc("/", s.MainHandle())
 	s.mux.HandleFunc("/signup", s.SignupHandle())
+	s.mux.Handle("/login", s.LoginHandle())
 	s.mux.HandleFunc("/confirmation", ConfirmHandler)
 	return
 }
@@ -56,15 +56,14 @@ func (s *Server) SignupHandle() http.HandlerFunc {
 				return
 			}
 
-			encryptPass := model.HashPwd(userInfo.Password)
+			encryptPass := model.HashPassword(userInfo.Password)
 			userInfo.EncryptedPwd = encryptPass // fill with Encrypted Password
 			err := s.database.User().Create(&userInfo)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusNotImplemented)
+				http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 				return
-			} else {
-				http.Redirect(w, r, "/confirmation", http.StatusSeeOther)
 			}
+			http.Redirect(w, r, "/confirmation", http.StatusSeeOther)
 
 		}
 	}
@@ -73,36 +72,53 @@ func (s *Server) SignupHandle() http.HandlerFunc {
 
 // LoginHandle --->
 func (s *Server) LoginHandle() http.HandlerFunc {
+	type Login struct {
+		auth         bool
+		unameOremail bool
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/login" {
 			http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
 
-		switch r.Method {
-		case "GET":
+		if r.Method == "GET" {
 			tpl.ExecuteTemplate(w, "login.html", nil)
-		case "POST":
+		} else if r.Method == "POST" {
 			r.ParseForm()
 			login := model.Users{
 				Username: r.PostFormValue("Username"),
-				Email:    r.PostFormValue("Email"),
 				Password: r.PostFormValue("Password"),
 			}
-			find := database.UsersStore{}
-			if login.Username == "" {
-				_, err := find.FindByEmail(login.Email)
+			check := Login{}
+
+			check.unameOremail = model.UnameOrEmail(login.Username)
+
+			if check.unameOremail {
+				u, err := s.database.User().FindByEmail(login.Username)
 				if err != nil {
-					http.Error(w, "Invalid", http.StatusUnauthorized)
+					http.Error(w, err.Error(), http.StatusUnauthorized)
 					return
 				}
-			} else if login.Email == "" {
-				_, err := find.FindByUsername(login.Username)
-				if err != nil {
-					http.Error(w, "Invalid", http.StatusUnauthorized)
+				check.auth = model.ComparePassword(u.EncryptedPwd, login.Password)
+				if !check.auth {
+					http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 					return
 				}
+			} else if !check.unameOremail {
+				u, err := s.database.User().FindByUsername(login.Username)
+				if err != nil {
+					http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+					return
+				}
+				check.auth = model.ComparePassword(u.EncryptedPwd, login.Password)
+				if !check.auth {
+					http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+					return
+				}
+
 			}
+			http.Redirect(w, r, "/main", http.StatusSeeOther)
 
 		}
 

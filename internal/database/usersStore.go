@@ -32,10 +32,10 @@ func (us *UsersStore) Create(u *model.Users) error {
 func (us *UsersStore) FindByUsername(username string) (*model.Users, error) {
 
 	u := &model.Users{}
-	if err := us.database.db.QueryRow("SELECT id, username, password FROM Users where username = \"?\"", username).Scan(
+	if err := us.database.db.QueryRow("SELECT id, username, password FROM Users where username = ?", username).Scan(
 		&u.ID,
 		&u.Username,
-		&u.Password,
+		&u.EncryptedPwd,
 	); err != nil {
 		return nil, err
 	}
@@ -45,11 +45,12 @@ func (us *UsersStore) FindByUsername(username string) (*model.Users, error) {
 
 // FindByEmail ...
 func (us *UsersStore) FindByEmail(email string) (*model.Users, error) {
+	fmt.Println(email)
 	u := &model.Users{}
-	if err := us.database.db.QueryRow("SELECT id, email, password FROM Users where email = \"?\"", email).Scan(
+	if err := us.database.db.QueryRow("SELECT id, email, password FROM Users where email = ?", email).Scan(
 		&u.ID,
 		&u.Email,
-		&u.Password,
+		&u.EncryptedPwd,
 	); err != nil {
 		return nil, err
 	}
