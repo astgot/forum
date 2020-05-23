@@ -25,14 +25,15 @@ func (s *Server) MainHandle() http.HandlerFunc {
 			http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
-		c, err := r.Cookie("user")
-		if err != nil {
-			c = &http.Cookie{
-				Name: "guest", 
-				Value:
-			}
-			http.SetCookie(w, )
-		}
+		// c, err := r.Cookie("user")
+		// if err != nil {
+		// 	cookieGuest :=
+		// 	c = &http.Cookie{
+		// 		Name: "guest",
+		// 		Value:
+		// 	}
+		// 	http.SetCookie(w, )
+		// }
 		if err := tpl.ExecuteTemplate(w, "main.html", nil); err != nil {
 			http.Error(w, "Sorry, something went wrong", http.StatusInternalServerError)
 			return
