@@ -22,6 +22,10 @@ func (s *Server) MainHandle() http.HandlerFunc {
 
 	// Here we can create our own struct, which is usable only here
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" && r.URL.Path != "/main" {
+			http.Error(w, "404 Not Found", http.StatusNotFound)
+			return
+		}
 		io.WriteString(w, "<b>YO Wazzup!!!</b>")
 	}
 }
@@ -54,14 +58,13 @@ func (s *Server) SignupHandle() http.HandlerFunc {
 
 			encryptPass := model.HashPwd(userInfo.Password)
 			userInfo.EncryptedPwd = encryptPass // fill with Encrypted Password
-			userRepo := database.UsersStore{}
-			err := userRepo.Create(&userInfo)
+			err := s.database.User().Create(&userInfo)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusNotImplemented)
 				return
+			} else {
+				http.Redirect(w, r, "/confirmation", http.StatusSeeOther)
 			}
-
-			http.Redirect(w, r, "/confirmation", http.StatusCreated)
 
 		}
 	}
