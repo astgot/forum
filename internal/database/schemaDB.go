@@ -14,7 +14,7 @@ func (d *Database) BuildSchema() error {
 								)`)
 	CheckErr(err)
 	users.Exec()
-	d.Close()
+	// d.Close()
 	return nil
 }
 
