@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -31,6 +32,8 @@ func (s *Server) Start() error {
 	if err := s.ConfigureDB(); err != nil {
 		return err
 	}
+	fmt.Println("Server is starting ...")
+
 	return http.ListenAndServe(s.config.WebPort, s.mux)
 
 }
