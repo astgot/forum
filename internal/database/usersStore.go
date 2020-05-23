@@ -13,17 +13,17 @@ type UsersStore struct {
 
 // Create ---> signing up
 func (us *UsersStore) Create(u *model.Users) error {
-	fmt.Println(u.Firstname, u.Lastname, u.Username, u.Email, u.EncryptedPwd)
-	res, err := us.database.db.Exec("INSERT INTO Users (firstname, lastname, username, email, password) VALUES (?, ?, ?, ?, ?)",
-		u.Firstname, u.Lastname, u.Username, u.Email, u.EncryptedPwd)
+
+	stmnt, err := us.database.db.Prepare("INSERT INTO Users (firstname, lastname, username, email, password) VALUES (?, ?, ?, ?, ?)")
+	res, err := stmnt.Exec(u.Firstname, u.Lastname, u.Username, u.Email, u.EncryptedPwd)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
-	fmt.Println("assssas")
 
 	id, _ := res.LastInsertId()
-
 	u.ID = int(id)
+
 	// return u, nil
 	return nil
 }
