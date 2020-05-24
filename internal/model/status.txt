@@ -1,3 +1,0 @@
-NotFound user StatusUnauthoried
-               StatusUnprocessableEntity
-StatusCreated

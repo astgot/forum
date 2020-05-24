@@ -22,7 +22,7 @@ func (us *UsersStore) Create(u *model.Users) error {
 	}
 
 	id, _ := res.LastInsertId()
-	u.ID = int(id)
+	u.ID = id
 
 	// return u, nil
 	return nil
