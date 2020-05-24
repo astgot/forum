@@ -37,16 +37,12 @@
              {{ with .Errors.Confirm }}
              <p>{{ . }}</p>
              {{ end }}
-             {{ with .Errors.Field }}
-             <p>{{ . }}</p>
-             {{ end }}
-             {{with .Errors.Unique }}
+             {{with .Errors.Unique }} 
+             <!-- When username or email is not unique  -->
              <p>{{ . }}</p>
              {{ end }}
              <input type="submit" value="Register">
              
          </form>
-
-     
 </body>     
 </html>
