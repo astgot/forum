@@ -6,15 +6,13 @@ import (
 	"github.com/astgot/forum/internal/model"
 )
 
-// UsersStore will store users' data
-type UsersStore struct {
-	database *Database
-}
-
 // Create ---> signing up
-func (us *UsersStore) Create(u *model.Users) error {
+func (d *Database) Create(u *model.Users) error {
+	if err := d.Open(); err != nil {
+		return err
+	}
 
-	stmnt, err := us.database.db.Prepare("INSERT INTO Users (firstname, lastname, username, email, password) VALUES (?, ?, ?, ?, ?)")
+	stmnt, err := d.db.Prepare("INSERT INTO Users (firstname, lastname, username, email, password) VALUES (?, ?, ?, ?, ?)")
 	res, err := stmnt.Exec(u.Firstname, u.Lastname, u.Username, u.Email, u.EncryptedPwd)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -29,10 +27,13 @@ func (us *UsersStore) Create(u *model.Users) error {
 }
 
 // FindByUsername ...
-func (us *UsersStore) FindByUsername(username string) (*model.Users, error) {
+func (d *Database) FindByUsername(username string) (*model.Users, error) {
+	if err := d.Open(); err != nil {
+		return nil, err
+	}
 
 	u := &model.Users{}
-	if err := us.database.db.QueryRow("SELECT id, username, password FROM Users where username = ?", username).Scan(
+	if err := d.db.QueryRow("SELECT id, username, password FROM Users where username = ?", username).Scan(
 		&u.ID,
 		&u.Username,
 		&u.EncryptedPwd,
@@ -44,13 +45,17 @@ func (us *UsersStore) FindByUsername(username string) (*model.Users, error) {
 }
 
 // FindByEmail ...
-func (us *UsersStore) FindByEmail(email string) (*model.Users, error) {
+func (d *Database) FindByEmail(email string) (*model.Users, error) {
+	if err := d.Open(); err != nil {
+		return nil, err
+	}
 	u := &model.Users{}
-	if err := us.database.db.QueryRow("SELECT id, email, password FROM Users where email = ?", email).Scan(
+	if err := d.db.QueryRow("SELECT id, email, password FROM Users where email = ?", email).Scan(
 		&u.ID,
 		&u.Email,
 		&u.EncryptedPwd,
 	); err != nil {
+		fmt.Println("asas")
 		return nil, err
 	}
 

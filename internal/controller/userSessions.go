@@ -1,9 +1,15 @@
-package model
+package controller
 
 // Sessions ...
 type Sessions struct {
-	UserID    int64
-	SessionID string
+	UserID       int64
+	SessionName  string
+	SessionValue string
+}
+
+// NewSession ...
+func NewSession() *Sessions {
+	return &Sessions{}
 }
 
 /* SessionID assigned to Users.ID, if Sessiontime has not expired, it will keep that session

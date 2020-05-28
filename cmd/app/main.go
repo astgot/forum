@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/astgot/forum/internal/server"
+	_ "github.com/mattn/go-sqlite3" // SQLite driver
 )
 
 func main() {

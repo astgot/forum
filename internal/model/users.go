@@ -12,3 +12,8 @@ type Users struct {
 	EncryptedPwd string `db:"password"`
 	Errors       map[string]string
 }
+
+// New ...
+func New() *Users {
+	return &Users{}
+}

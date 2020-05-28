@@ -2,15 +2,12 @@ package database
 
 import (
 	"database/sql"
-
-	_ "github.com/mattn/go-sqlite3" // SQLite driver
 )
 
 // Database ...
 type Database struct {
-	config     *Config
-	db         *sql.DB
-	usersStore *UsersStore
+	config *Config
+	db     *sql.DB
 }
 
 // NewDB ...
@@ -22,31 +19,29 @@ func NewDB(config *Config) *Database {
 
 // InitDB ...
 func (d *Database) InitDB() error {
-	db, err := sql.Open("sqlite3", d.config.DatabaseAddress)
+	if err := d.Open(); err != nil {
+		return err
+	}
+	d.BuildSchema()
+	d.Close()
+	return nil
+}
+
+// Open ...
+func (d *Database) Open() error {
+	store, err := sql.Open("sqlite3", d.config.DatabaseAddress)
 	if err != nil {
 		return err
 	}
 	// Complete checking of connection with DB
-	if err := db.Ping(); err != nil {
+	if err := store.Ping(); err != nil {
 		return err
 	}
-	d.db = db // fill "db" field with completely configured DB
-	d.BuildSchema()
+	d.db = store // fill "db" field with completely configured DB
 	return nil
 }
 
 // Close DB
 func (d *Database) Close() {
 	d.db.Close()
-}
-
-// User ---> to use Users' info in the service --->
-func (d *Database) User() *UsersStore {
-	if d.usersStore != nil {
-		return d.usersStore
-	}
-	d.usersStore = &UsersStore{
-		database: d,
-	}
-	return d.usersStore
 }

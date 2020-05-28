@@ -1,6 +1,8 @@
 package server
 
-import "github.com/astgot/forum/internal/database"
+import (
+	"github.com/astgot/forum/internal/database"
+)
 
 // Config ...
 type Config struct {
