@@ -39,10 +39,13 @@ func (s *Server) Start() error {
 
 // ConfigureRouter ...
 func (s *Server) ConfigureRouter() {
+	fs := http.FileServer(http.Dir("web/css"))
+	s.mux.Mux.Handle("/css/", http.StripPrefix("/css/", fs))
 	s.mux.Mux.HandleFunc("/", s.mux.MainHandle())
 	s.mux.Mux.HandleFunc("/signup", s.mux.SignupHandle())
 	s.mux.Mux.HandleFunc("/login", s.mux.LoginHandle())
 	s.mux.Mux.HandleFunc("/confirmation", controller.ConfirmHandler)
+	s.mux.Mux.HandleFunc("/create", s.mux.PostHandler())
 	return
 }
 
