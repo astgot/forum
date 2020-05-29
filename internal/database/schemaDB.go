@@ -15,12 +15,13 @@ func (d *Database) BuildSchema() error {
 	CheckErr(err)
 	users.Exec()
 
-	// sessions, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS Sessions (
-	// 	user_id INTEGER NOT NULL REFERENCES ON,
-	// 	value TEXT NOT NULL
-	// )`)
-	// CheckErr(err)
-	// sessions.Exec()
+	sessions, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS Sessions (
+		cookieName TEXT NOT NULL,
+		cookieValue TEXT NOT NULL UNIQUE,
+		FOREIGN KEY(cookieName) REFERENCES Users(username)
+	)`)
+	CheckErr(err)
+	sessions.Exec()
 	// d.Close()
 	return nil
 }

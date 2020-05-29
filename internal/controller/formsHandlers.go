@@ -22,11 +22,10 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 			http.Error(w, "Sorry, something went wrong", http.StatusInternalServerError)
 			return
 		}
+
 		// Checking for session, processing ...
-		if err := CheckSession(r, "authenticated"); err != nil {
-			if err = CheckSession(r, "guest"); err != nil {
-				AddSession(w, "guest")
-			}
+		if err := CheckSession(r, "guest"); err == http.ErrNoCookie {
+			m.AddSession(w, "guest", nil)
 		}
 
 	}
@@ -59,13 +58,13 @@ func (m *Multiplexer) SignupHandle() http.HandlerFunc {
 			}
 
 			encryptPass := HashPassword(user.Password)
-			user.EncryptedPwd = encryptPass // fill with Encrypted Password
-			err := m.db.Create(user)        // Sending
+			user.EncryptedPwd = encryptPass   // fill with Encrypted Password
+			newUser, err := m.db.Create(user) // Sending
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 				return
 			}
-			AddSession(w, "guest") // guest session
+			m.AddSession(w, "guest", newUser) // guest session
 			http.Redirect(w, r, "/confirmation", http.StatusSeeOther)
 
 		}
@@ -89,7 +88,7 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 			tpl.ExecuteTemplate(w, "login.html", nil)
 		} else if r.Method == "POST" {
 			r.ParseForm()
-			login := model.Users{
+			login := &model.Users{
 				Username: r.PostFormValue("Username"),
 				Password: r.PostFormValue("Password"),
 			}
@@ -121,7 +120,8 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 				}
 
 			}
-			AddSession(w, "authenticated") // Add cookie session after successful authentication
+			// login.ID = m.db.GetUserID(login.Username, check.unameOrEmail)
+			m.AddSession(w, login.Username, login) // Add cookie session after successful authentication
 			http.Redirect(w, r, "/main", http.StatusSeeOther)
 
 		}

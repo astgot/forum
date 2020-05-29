@@ -1,4 +1,4 @@
-package controller
+package model
 
 // Sessions ...
 type Sessions struct {

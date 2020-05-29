@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/astgot/forum/internal/model"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -22,13 +23,16 @@ func CheckSession(r *http.Request, sessionName string) error {
 }
 
 // AddSession ...
-func AddSession(w http.ResponseWriter, sessionName string) {
-	cookie := &http.Cookie{
+func (m *Multiplexer) AddSession(w http.ResponseWriter, sessionName string, user *model.Users) {
+	cookieSession := &http.Cookie{
 		Name:    sessionName,
 		Value:   GenerateSessionToken(),
 		Expires: time.Now().Add(20 * time.Minute),
 	}
 
-	http.SetCookie(w, cookie)
+	http.SetCookie(w, cookieSession)
+	if sessionName != "guest" {
+		m.db.InsertSession(user, cookieSession)
+	}
 
 }
