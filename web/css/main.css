@@ -1,0 +1,24 @@
+.header{
+    width: 100%;
+    background: rgb(244, 252, 230);   
+}
+.forum{
+    font-family: 'cursive',Monotype Corsiva;
+    display:inline-block;
+    margin: 5px;
+}
+.bottom{
+    padding: 10px;
+    float: right;
+margin-top: 17px;
+height: 30px;
+}
+.bottom button{
+    background-color: #4CAF50;
+    /* margin: 5px 0; */
+    border-radius: 5px;
+    border : none;
+    cursor: pointer;
+    width: 150px;
+height: 30px;
+}

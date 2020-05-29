@@ -4,16 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
+    <link rel="stylesheet" href="../css/login.css">
 </head>
 <body>
-    <h1>Forum</h1>
-
     <form action="/login" method="POST">
-        <label>Username or E-mail</label>
-        <input type="text" name="Username"><br><br>
-        <label>Password</label>
-        <input type="password" name="Password"><br><br>
-        <input type="submit" value="Log in">
+        <div class="container">
+            <p>
+                <label for="uname"><b>Ник или Эмэйл</b></label>
+                <input type="text" placeholder="Введите ник или эмэйл" name="Username" required>
+            </p>
+            <p>
+                <label for="psw"><b>Пароль</b></label>
+                <input type="password" placeholder="Введите Пароль" name="Password" required>
+            </p>
+            <p>
+            <label>
+                <input type="checkbox" checked="checked" name="remember"> Запомнить меня
+              </label>
+            </p>
+            <a href="/main"><button type="submit">Войти</button></a>
+            <a href="/signup"><button type="submit">Регистрация</button></a>
+        </div>
     </form>
+    
 </body>
 </html>

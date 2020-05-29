@@ -1,48 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signup Page</title>
-</head>
-<body>
-     
-         <h1>Registration Form</h1>
+      <title>Registrtation Page</title>
+      <link rel="stylesheet" href="../css/signup.css">
+  </head>
 
-         <form action="/signup" method="POST">
-            <label>First name</label>
-            <input type="text" minlength="1" name="Firstname" required><br><br>
-            <label>Last name</label>
-            <input type="text" minlength="1" name="Lastname" required><br><br>
-            {{ with .Errors.FLName }}
-            <p>{{ . }}</p>
-            {{ end }} 
-            <label>Username</label>
-             <input type="text" minlength="3" maxlength="20" name="Username" required><br><br>
-             {{ with .Errors.Username }}
-             <p>{{ . }}</p>
-             {{ end }}
-             <label>E-mail</label>
-             <input type="email" minlength="6" name="Email" required><br><br>
-             {{ with .Errors.Email }}
-             <p>{{ . }}</p>
-             {{ end }}
-             <label>Password</label>
-             <input type="password"  minlength="8" maxlength="20" name="Password" required><br><br>
-             {{ with .Errors.Password }}
-             <p>{{ . }}</p>
-             {{ end }}
-             <label>Confirm password</label>
-             <input type="password" name="Confirm"><br><br>
-             {{ with .Errors.Confirm }}
-             <p>{{ . }}</p>
-             {{ end }}
-             {{with .Errors.Unique }} 
-             <!-- When username or email is not unique  -->
-             <p>{{ . }}</p>
-             {{ end }}
-             <input type="submit" value="Register">
-             
-         </form>
-</body>     
+<body>
+  <form action="/signup" method="post">
+    <!-- <div class="imgcontainer">
+    </div> -->
+    <div class="container">
+      <label for="firstname"><b>Имя </b></label>
+      <input type="text" placeholder="Введите Имя" name="Firstname" required>
+      <label for="lastname"><b>Фамилия </b></label>
+      <input type="text" placeholder="Введите Фамилию" name="Lastname" required>
+      <label for="uname"><b>Ник</b></label>
+      <input type="text" placeholder="Введите Ник" name="Username" required>
+      <label for="email"><b>Эмэил </b></label>
+      <input type="email" placeholder="Введите эмэйл" name="Email" required>
+      <label for="psw"><b>Пароль</b></label>
+      <input type="password" placeholder="Введите Пароль" name="Password" required>
+      <input type="password" placeholder="Подтвердите Пароль" name="Confirm" required>
+      <button type="submit">Зарегистрироватся</button>
+      <label>
+        <input type="checkbox" checked="checked" name="remember"> Запомнить меня
+      </label>
+    </div>
+  
+    <div class="container"  >  
+      <span class="psw"> <a href="#">Забыли пароль?</a></span>
+    </div>
+  </form> 
+</body>
 </html>
+
