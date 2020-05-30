@@ -16,9 +16,10 @@ func (d *Database) BuildSchema() error {
 	users.Exec()
 
 	sessions, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS Sessions (
+		userID INTEGER NOT NULL,
 		cookieName TEXT NOT NULL,
 		cookieValue TEXT NOT NULL UNIQUE,
-		FOREIGN KEY(cookieName) REFERENCES Users(username)
+		FOREIGN KEY(userID) REFERENCES Users(id)
 	)`)
 	CheckErr(err)
 	sessions.Exec()

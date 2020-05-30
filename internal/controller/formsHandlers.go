@@ -120,7 +120,7 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 				}
 
 			}
-			// login.ID = m.db.GetUserID(login.Username, check.unameOrEmail)
+			login.ID = m.db.GetUserID(login, check.unameOrEmail)
 			m.AddSession(w, login.Username, login) // Add cookie session after successful authentication
 			http.Redirect(w, r, "/main", http.StatusSeeOther)
 

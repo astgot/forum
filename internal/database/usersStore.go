@@ -64,28 +64,28 @@ func (d *Database) FindByEmail(email string) (*model.Users, error) {
 }
 
 // GetUserID ...
-// func (d *Database) GetUserID(creds string, uname bool) int64 {
-// 	if err := d.Open(); err != nil {
-// 		return 0
-// 	}
-// 	var id int64
-// 	if uname {
-// 		if err := d.db.QueryRow("SELECT id FROM Users where email = ?", creds).Scan(
-// 			id,
-// 		); err != nil {
-// 			return 0
-// 		}
-// 	} else {
-// 		if err := d.db.QueryRow("SELECT id FROM Users where username = ?", creds).Scan(
-// 			id,
-// 		); err != nil {
-// 			return 0
-// 		}
+func (d *Database) GetUserID(user *model.Users, email bool) int64 {
+	if err := d.Open(); err != nil {
+		return 0
+	}
 
-// 	}
-// 	return id
+	if email {
+		if err := d.db.QueryRow("SELECT id FROM Users where email = ?", user.Username).Scan(
+			&user.ID,
+		); err != nil {
+			return 0
+		}
+	} else {
+		if err := d.db.QueryRow("SELECT id FROM Users where username = ?", user.Username).Scan(
+			&user.ID,
+		); err != nil {
+			return 0
+		}
 
-// }
+	}
+	return user.ID
+
+}
 
 // InsertSession ...
 func (d *Database) InsertSession(u *model.Users, session *http.Cookie) (*model.Sessions, error) {
@@ -93,7 +93,8 @@ func (d *Database) InsertSession(u *model.Users, session *http.Cookie) (*model.S
 		return nil, err
 	}
 	cookie := model.NewSession()
-	if err := d.db.QueryRow("INSERT INTO Sessions (cookieName, cookieValue) VALUES ( ?, ?)", session.Name, session.Value).Scan(
+	if err := d.db.QueryRow("INSERT INTO Sessions (userID, cookieName, cookieValue) VALUES (?, ?, ?)", u.ID, session.Name, session.Value).Scan(
+		&cookie.UserID,
 		&cookie.SessionName,
 		&cookie.SessionValue,
 	); err != nil {
