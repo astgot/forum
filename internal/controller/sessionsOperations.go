@@ -1,8 +1,8 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/astgot/forum/internal/model"
 	uuid "github.com/satori/go.uuid"
@@ -25,14 +25,27 @@ func CheckSession(r *http.Request, sessionName string) error {
 // AddSession ...
 func (m *Multiplexer) AddSession(w http.ResponseWriter, sessionName string, user *model.Users) {
 	cookieSession := &http.Cookie{
-		Name:    sessionName,
-		Value:   GenerateSessionToken(),
-		Expires: time.Now().Add(20 * time.Minute),
+		Name:   sessionName,
+		Value:  GenerateSessionToken(),
+		MaxAge: 900,
 	}
 
 	http.SetCookie(w, cookieSession)
 	if sessionName != "guest" {
-		m.db.InsertSession(user, cookieSession)
+		if _, err := m.db.InsertSession(user, cookieSession); err != nil {
+			fmt.Println("Error")
+		}
 	}
 
+}
+
+// DeleteSession ...
+func (m *Multiplexer) DeleteSession(w http.ResponseWriter, sessionValue string) {
+	cookie := &http.Cookie{
+		Name:   "null",
+		Value:  "",
+		MaxAge: -1,
+	}
+	http.SetCookie(w, cookie)
+	m.db.DeleteCookieFromDB(sessionValue)
 }

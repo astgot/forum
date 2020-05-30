@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -121,7 +122,8 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 
 			}
 			login.ID = m.db.GetUserID(login, check.unameOrEmail)
-			m.AddSession(w, login.Username, login) // Add cookie session after successful authentication
+			fmt.Println("ID:", login.ID)
+			m.AddSession(w, "authenticated", login) // Add cookie session after successful authentication
 			http.Redirect(w, r, "/main", http.StatusSeeOther)
 
 		}
@@ -136,4 +138,22 @@ func ConfirmHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	tpl.ExecuteTemplate(w, "confirmation.html", nil)
+}
+
+// LogoutHandle ...
+func (m *Multiplexer) LogoutHandle() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/logout" {
+			cookie, err := r.Cookie("authenticated")
+			fmt.Println("----->", cookie.Value)
+			if err != nil {
+				m.AddSession(w, "guest", nil)
+				http.Redirect(w, r, "/main", http.StatusSeeOther)
+				/*OR http.Error()*/
+			}
+			m.DeleteSession(w, cookie.Value)
+			http.Redirect(w, r, "/main", http.StatusFound)
+		}
+
+	}
 }
