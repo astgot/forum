@@ -85,3 +85,16 @@ func (d *Database) GetUserID(user *model.Users, email bool) int64 {
 	return user.ID
 
 }
+
+// FindByUserID ...
+func (d *Database) FindByUserID(UID int64) (*model.Users, error) {
+	u := model.NewUser()
+	if err := d.db.QueryRow("SELECT id, firstname, lastname, username FROM Users WHERE id = ?", UID).
+		Scan(&u.ID,
+			&u.Firstname,
+			&u.Lastname,
+			&u.Username); err != nil {
+		return nil, err
+	}
+	return u, nil
+}

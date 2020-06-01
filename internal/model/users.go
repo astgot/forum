@@ -13,7 +13,7 @@ type Users struct {
 	Errors       map[string]string
 }
 
-// New ...
-func New() *Users {
+// NewUser ...
+func NewUser() *Users {
 	return &Users{}
 }

@@ -12,6 +12,8 @@ func (d *Database) BuildSchema() error {
 									email TEXT NOT NULL UNIQUE, 
 									password TEXT NOT NULL
 								)`)
+
+	defer users.Close()
 	CheckErr(err)
 	users.Exec()
 
@@ -21,9 +23,10 @@ func (d *Database) BuildSchema() error {
 		cookieValue TEXT NOT NULL UNIQUE,
 		FOREIGN KEY(userID) REFERENCES Users(id)
 	)`)
+	defer sessions.Close()
 	CheckErr(err)
 	sessions.Exec()
-	// d.Close()
+
 	return nil
 }
 

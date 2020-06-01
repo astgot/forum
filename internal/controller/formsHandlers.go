@@ -10,28 +10,6 @@ import (
 
 var tpl = template.Must(template.ParseGlob("web/templates/*"))
 
-// MainHandle ...
-func (m *Multiplexer) MainHandle() http.HandlerFunc {
-
-	// Here we can create our own struct, which is usable only here
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" && r.URL.Path != "/main" {
-			http.Error(w, "404 Not Found", http.StatusNotFound)
-			return
-		}
-		if err := tpl.ExecuteTemplate(w, "main.html", nil); err != nil {
-			http.Error(w, "Sorry, something went wrong", http.StatusInternalServerError)
-			return
-		}
-
-		// Checking for session, processing ...
-		if err := CheckSession(r, "guest"); err == http.ErrNoCookie {
-			m.AddSession(w, "guest", nil)
-		}
-
-	}
-}
-
 // SignupHandle ---> /signup
 func (m *Multiplexer) SignupHandle() http.HandlerFunc {
 
@@ -145,12 +123,14 @@ func (m *Multiplexer) LogoutHandle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/logout" {
 			cookie, err := r.Cookie("authenticated")
-			fmt.Println("----->", cookie.Value)
 			if err != nil {
 				m.AddSession(w, "guest", nil)
 				http.Redirect(w, r, "/main", http.StatusSeeOther)
+				return
 				/*OR http.Error()*/
 			}
+			fmt.Println("----->", cookie.Value)
+
 			m.DeleteSession(w, cookie.Value)
 			http.Redirect(w, r, "/main", http.StatusFound)
 		}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creating Post</title>
+</head>
+<body>
+    <h1>Post Creation Workshop</h1>
+    <form action="/create" method="POST">
+        <div>
+            <p><label>Category</label></p>
+            <p><input type="text" name="categoryPost"></p>
+            <p><label for="title">Title</label></p>
+            <p><input type="text" name="title"></p>
+        </div>
+        <div>
+            <textarea name="postContent" placeholder="Type something ..."></textarea>        
+        </div>
+        <p><input type="submit" value="Post"></p>
+    </form>
+</body>
+</html>

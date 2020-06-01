@@ -14,7 +14,7 @@ func GenerateSessionToken() string {
 }
 
 // CheckSession ...
-func CheckSession(r *http.Request, sessionName string) error {
+func (m *Multiplexer) CheckSession(r *http.Request, sessionName string) error {
 	_, err := r.Cookie(sessionName)
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (m *Multiplexer) AddSession(w http.ResponseWriter, sessionName string, user
 // DeleteSession ...
 func (m *Multiplexer) DeleteSession(w http.ResponseWriter, sessionValue string) {
 	cookie := &http.Cookie{
-		Name:   "null",
+		Name:   "authenticated",
 		Value:  "",
 		MaxAge: -1,
 	}
