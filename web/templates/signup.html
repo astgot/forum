@@ -16,13 +16,28 @@
       <input type="text" placeholder="Введите Имя" name="Firstname" required>
       <label for="lastname"><b>Фамилия </b></label>
       <input type="text" placeholder="Введите Фамилию" name="Lastname" required>
+      {{ with .Errors.FLName }}
+      <p>{{ . }}</p>
+      {{ end }}
       <label for="uname"><b>Ник</b></label>
       <input type="text" placeholder="Введите Ник" name="Username" required>
-      <label for="email"><b>Эмэил </b></label>
+      {{ with .Errors.Username }}
+      <p>{{ . }}</p>
+      {{ end }}
+      <label for="email"><b>Эмэйл </b></label>
       <input type="email" placeholder="Введите эмэйл" name="Email" required>
+      {{ with .Errors.Email }}
+      <p>{{ . }}</p>
+      {{ end }}
       <label for="psw"><b>Пароль</b></label>
       <input type="password" placeholder="Введите Пароль" name="Password" required>
+      {{ with .Errors.Password }}
+      <p>{{ . }}</p>
+      {{ end }}
       <input type="password" placeholder="Подтвердите Пароль" name="Confirm" required>
+      {{ with .Errors.Confirm }}
+      <p>{{ . }}</p>
+      {{ end }}
       <button type="submit">Зарегистрироватся</button>
       <label>
         <input type="checkbox" checked="checked" name="remember"> Запомнить меня
