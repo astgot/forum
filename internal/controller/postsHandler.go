@@ -28,10 +28,10 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 		}
 		post := model.NewPost()
 		if r.Method == "POST" {
+			r.ParseForm()
 			post.UserID = u.ID
-			post.Author = u.Firstname + u.Lastname + "aka" + u.Username
+			post.Author = u.Firstname + " " + u.Lastname + " aka " + "\"" + u.Username + "\""
 			post.Title = r.PostFormValue("title")
-			post.Category.Name = r.PostFormValue("categoryPost")
 			post.Content = r.PostFormValue("postContent")
 			post.CreationDate = time.Now().Format("January 2 15:04")
 			m.db.InsertPostInfo(post)
@@ -42,4 +42,16 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 		}
 
 	}
+}
+
+// GetAllPosts ...
+func (m *Multiplexer) GetAllPosts(w http.ResponseWriter) []*model.Post {
+
+	posts, err := m.db.GetPosts()
+	if err != nil {
+		http.Error(w, "Something went wrong (Test Post)", http.StatusInternalServerError)
+		return nil
+	}
+	return posts
+
 }

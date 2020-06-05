@@ -6,10 +6,8 @@ type Post struct {
 	UserID       int64 `db:"userID"`
 	Title        string
 	Author       string
-	Category     *Category
 	Content      string
 	CreationDate string `db:"creationDate"`
-	Rating       *PostRating
 }
 
 // Category ...
@@ -30,10 +28,7 @@ type PostRating struct {
 
 // NewPost ...
 func NewPost() *Post {
-	return &Post{
-		Category: NewCategory(),
-		Rating:   NewPostRating(),
-	}
+	return &Post{}
 }
 
 // NewCategory ...

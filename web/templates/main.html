@@ -19,7 +19,30 @@
         
     </div>
     </div>
+    
+    {{if .AuthUser}}
+    {{range .PostScroll}}
+ <div>
+     <h1>Hi, {{.Post.Author}}</h1>
+ </div>
+    {{end}}
+ {{end}} 
 
-  
+{{if .PostScroll}}
+    {{range .PostScroll}}
+    <div>
+
+        <p>{{.Post.Author}}</p>
+        <p>{{.Post.Title}}</p>
+        <p>{{.Post.Content}}</p>
+        <p>{{.Post.CreationDate}}</p>
+        <br>
+        <br>
+        
+        
+
+    </div>
+    {{end}}
+{{end}}
 </body>
 </html>

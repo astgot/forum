@@ -27,6 +27,19 @@ func (d *Database) BuildSchema() error {
 	CheckErr(err)
 	sessions.Exec()
 
+	posts, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS Posts (
+		post_id INTEGER PRIMARY KEY NOT NULL,
+		user_id INTEGER NOT NULL,
+		author TEXT NOT NULL, 
+		title TEXT NOT NULL, 
+		content TEXT NOT NULL,
+		creationDate TEXT NOT NULL,
+		FOREIGN KEY(user_id) REFERENCES Users(id) 
+	)`)
+	defer posts.Close()
+	CheckErr(err)
+	posts.Exec()
+
 	return nil
 }
 
@@ -36,3 +49,6 @@ func CheckErr(err error) {
 		log.Fatal(err)
 	}
 }
+
+// like_count INTEGER,
+// dislike_count INTEGER,
