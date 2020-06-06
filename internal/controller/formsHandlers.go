@@ -2,13 +2,10 @@ package controller
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 
 	"github.com/astgot/forum/internal/model"
 )
-
-var tpl = template.Must(template.ParseGlob("web/templates/*"))
 
 // SignupHandle ---> /signup
 func (m *Multiplexer) SignupHandle() http.HandlerFunc {

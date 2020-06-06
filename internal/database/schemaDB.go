@@ -40,6 +40,24 @@ func (d *Database) BuildSchema() error {
 	CheckErr(err)
 	posts.Exec()
 
+	threads, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS Threads (
+		ID INTEGER PRIMARY KEY NOT NULL, 
+		Name TEXT NOT NULL UNIQUE
+	)`)
+	defer threads.Close()
+	CheckErr(err)
+	threads.Exec()
+
+	postMap, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS PostMapping (
+		postID INTEGER NOT NULL, 
+		threadID INTEGER NOT NULL,
+		FOREIGN KEY(postID) REFERENCES Posts(post_id),
+		FOREIGN KEY(threadID) REFERENCES Threads(ID)
+	)`)
+	defer postMap.Close()
+	CheckErr(err)
+	postMap.Exec()
+
 	return nil
 }
 

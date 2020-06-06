@@ -7,18 +7,19 @@ import (
 )
 
 // InsertPostInfo ...
-func (d *Database) InsertPostInfo(p *model.Post) error {
+func (d *Database) InsertPostInfo(p *model.Post) (int64, error) {
 	if err := d.Open(); err != nil {
-		return err
+		return -1, err
 	}
 
 	stmnt, err := d.db.Prepare("INSERT INTO Posts (user_id, author, title, content, creationDate) VALUES (?, ?, ?, ?, ?)")
 	defer stmnt.Close()
 	if err != nil {
-		return err
+		return -1, err
 	}
-	stmnt.Exec(p.UserID, p.Author, p.Title, p.Content, p.CreationDate)
-	return nil
+	res, _ := stmnt.Exec(p.UserID, p.Author, p.Title, p.Content, p.CreationDate)
+	id, _ := res.LastInsertId()
+	return id, nil
 }
 
 // GetPosts ...
@@ -56,5 +57,3 @@ func (d *Database) GetPostByPID(pid int64) *model.Post {
 	}
 	return post
 }
-
-/*Include author column in the table Posts, i think info about author easy to save in DB than every time call function to retrieve this info by USERID*/

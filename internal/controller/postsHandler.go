@@ -27,14 +27,18 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			return
 		}
 		post := model.NewPost()
+		thread := model.NewThread()
 		if r.Method == "POST" {
 			r.ParseForm()
 			post.UserID = u.ID
 			post.Author = u.Firstname + " " + u.Lastname + " aka " + "\"" + u.Username + "\""
 			post.Title = r.PostFormValue("title")
 			post.Content = r.PostFormValue("postContent")
+			thread.Name = r.PostFormValue("thread")
 			post.CreationDate = time.Now().Format("January 2 15:04")
-			m.db.InsertPostInfo(post)
+			post.PostID, _ = m.db.InsertPostInfo(post)
+			m.db.InsertThreadInfo(thread, post.PostID)
+
 			http.Redirect(w, r, "/main", http.StatusSeeOther)
 
 		} else if r.Method == "GET" {

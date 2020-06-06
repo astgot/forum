@@ -9,7 +9,7 @@ import (
 // MainHandle ...
 func (m *Multiplexer) MainHandle() http.HandlerFunc {
 
-	// Need to create structure to show array of Users, Posts for arranging them in HTML
+	// Need to create structure to show array of Users, Posts, Comments, Categories for arranging them in HTML
 	type PostRaw struct {
 		Post *model.Post
 	}
@@ -30,13 +30,10 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 
 			guest := &PostRaw{}
 			for _, post := range posts {
+				// guest.Author, _ = m.db.FindByUserID(post.UserID)
 				guest.Post = m.db.GetPostByPID(post.PostID)
 				mainPage.PostScroll = append(mainPage.PostScroll, guest)
 			}
-			// if err := tpl.ExecuteTemplate(w, "main.html", mainPage); err != nil {
-			// 	http.Error(w, "Sorry, something went wrong", http.StatusInternalServerError)
-			// 	return
-			// }
 			tpl.ExecuteTemplate(w, "main.html", mainPage)
 			return
 
@@ -49,10 +46,7 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 			mainPage.PostScroll = append(mainPage.PostScroll, auth)
 
 		}
-		// if err := tpl.ExecuteTemplate(w, "main.html", mainPage); err != nil {
-		// 	http.Error(w, "Sorry, something went wrong", http.StatusInternalServerError)
-		// 	return
-		// }
+
 		tpl.ExecuteTemplate(w, "main.html", mainPage)
 
 	}
