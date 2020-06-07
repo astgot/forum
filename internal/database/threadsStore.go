@@ -7,18 +7,19 @@ import (
 )
 
 // InsertThreadInfo ..
-func (d *Database) InsertThreadInfo(thread *model.Thread, postID int64) error {
+func (d *Database) InsertThreadInfo(threadName string, postID int64) error {
 	stmnt, err := d.db.Prepare("INSERT INTO Threads (Name) VALUES (?)")
 	if err != nil {
 		fmt.Println("insert Threads error")
 		return err
 	}
 	defer stmnt.Close()
-	res, err := stmnt.Exec(thread.Name)
+	res, err := stmnt.Exec(threadName)
 	if err != nil {
 		fmt.Println(err.Error(), "---> exec Threads error")
+		// if thread exists in DB, we will get his threadID, and insert to PostMapping Table
 		if err.Error() == "UNIQUE constraint failed: Threads.Name" {
-			ID := d.GetThreadID(thread.Name)
+			ID := d.GetThreadID(threadName)
 			d.InsertPostMapInfo(postID, ID)
 		}
 		return err

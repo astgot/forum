@@ -35,9 +35,17 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			post.Title = r.PostFormValue("title")
 			post.Content = r.PostFormValue("postContent")
 			thread.Name = r.PostFormValue("thread")
+			threads := CheckNumberOfThreads(thread.Name)
 			post.CreationDate = time.Now().Format("January 2 15:04")
 			post.PostID, _ = m.db.InsertPostInfo(post)
-			m.db.InsertThreadInfo(thread, post.PostID)
+			if post.PostID == -1 {
+				http.Error(w, "Invalid input", http.StatusBadRequest)
+				return
+			}
+			// If post has several threads, to this post will attach this info
+			for _, threadName := range threads {
+				m.db.InsertThreadInfo(threadName, post.PostID)
+			}
 
 			http.Redirect(w, r, "/main", http.StatusSeeOther)
 

@@ -17,8 +17,14 @@ func (d *Database) InsertPostInfo(p *model.Post) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	res, _ := stmnt.Exec(p.UserID, p.Author, p.Title, p.Content, p.CreationDate)
-	id, _ := res.LastInsertId()
+	res, err := stmnt.Exec(p.UserID, p.Author, p.Title, p.Content, p.CreationDate)
+	if err != nil {
+		return -1, err
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
 	return id, nil
 }
 
