@@ -59,3 +59,13 @@ func (d *Database) GetThreadID(name string) int64 {
 
 	return id
 }
+
+// GetThreadByID ...
+func (d *Database) GetThreadByID(id int64) (*model.Thread, error) {
+	thread := model.NewThread()
+	if err := d.db.QueryRow("SELECT * FROM Threads WHERE ID = ?", id).Scan(&thread.ID, &thread.Name); err != nil {
+		fmt.Println("error on func GetThreadByID()")
+		return nil, err
+	}
+	return thread, nil
+}
