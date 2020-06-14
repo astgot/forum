@@ -24,20 +24,16 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 			http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
-		posts := m.GetAllPosts(w)
+		posts := m.GetAllPosts(w) // fix order of the post (latest posts in the beginning)
 
 		cookie, err := r.Cookie("authenticated")
 		if err != nil {
 
-			guest := &PostRaw{}
 			for _, post := range posts {
+				guest := &PostRaw{}
 				// guest.Author, _ = m.db.FindByUserID(post.UserID)
-				guest.Post = m.db.GetPostByPID(post.PostID)
-				guest.Threads, err = m.db.GetThreadOfPost(post.PostID)
-				if err != nil {
-					http.Error(w, "Threads retrieving error", http.StatusInternalServerError)
-					return
-				}
+				guest.Post = post
+				guest.Threads, _ = m.db.GetThreadOfPost(post.PostID)
 				mainPage.PostScroll = append(mainPage.PostScroll, guest)
 			}
 			tpl.ExecuteTemplate(w, "main.html", mainPage)
