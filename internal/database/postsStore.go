@@ -34,7 +34,7 @@ func (d *Database) GetPosts() ([]*model.Post, error) {
 	if err := d.Open(); err != nil {
 		return nil, err
 	}
-	res, err := d.db.Query("SELECT * FROM Posts")
+	res, err := d.db.Query("SELECT * FROM Posts ORDER BY post_id DESC")
 	if err != nil {
 		return nil, err
 	}
