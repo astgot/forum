@@ -25,9 +25,10 @@ func (m *Multiplexer) CheckSession(r *http.Request, sessionName string) error {
 // AddSession ...
 func (m *Multiplexer) AddSession(w http.ResponseWriter, sessionName string, user *model.Users) {
 	cookieSession := &http.Cookie{
-		Name:   sessionName,
-		Value:  GenerateSessionToken(),
-		MaxAge: 900,
+		Name:     sessionName,
+		Value:    GenerateSessionToken(),
+		MaxAge:   900,
+		HttpOnly: true,
 	}
 
 	http.SetCookie(w, cookieSession)
@@ -42,9 +43,10 @@ func (m *Multiplexer) AddSession(w http.ResponseWriter, sessionName string, user
 // DeleteSession ...
 func (m *Multiplexer) DeleteSession(w http.ResponseWriter, sessionValue string) {
 	cookie := &http.Cookie{
-		Name:   "authenticated",
-		Value:  "",
-		MaxAge: -1,
+		Name:     "authenticated",
+		Value:    "",
+		MaxAge:   -1,
+		HttpOnly: true,
 	}
 	http.SetCookie(w, cookie)
 	m.db.DeleteCookieFromDB(sessionValue)
