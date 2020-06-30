@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/main.css">
+    <title>Forum Post</title>
+</head>
+<body>
+    <div class="header">
+        <div class="forum">
+        <h1>FORUM</h1>
+    </div>
+    
+    {{ if .AuthUser }}
+    <div class="bottom">
+        <a href="/"><button type="submit">Главная страница</button></a>
+        <a href="/create"><button type="submit">Создать пост</button></a>
+    </div>
+
+    <div class = "author">
+        <h1>Author of the post is {{ .Users.Username }}</h1>
+    </div>
+    {{ else }}
+    <div class="bottom">
+        <a href="/"><button type="submit">Главная страница</button></a>
+        <a href="/login"> <button type="submit">Войти</button></a>
+        <a href="/signup"><button type="submit">Регистрация</button></a>
+    </div>
+    {{ end }}
+    </div>
+    
+    {{ if .PostInfo }}
+        
+    <div class = "post">
+        <p>{{.Post.Title}}</p>
+        {{ range .PostInfo }}
+        <p>Threads: {{range .Threads}}#{{.Name}} {{end}}</p>
+        {{ end }}
+        <p>{{.Post.Content}}</p>
+        <p>{{.Post.CreationDate}}</p>
+        <br>
+        <br>
+    </div>
+    {{ end }}
+</body>
+</html>
