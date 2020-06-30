@@ -11,14 +11,14 @@
         <div class="forum">
         <h1>FORUM</h1>
     </div>
-    
+    <!-- If user is authenticated, buttons "create post" and "logout" are available -->
     {{if .AuthUser}}
 
         <div class="bottom">
             <a href="/create"><button type="submit">Создать пост</button></a>
             <a href="/logout"><button type="submit">Выйти</button></a>
         </div>
-    
+    <!-- Else guest, buttons "log in" and "sign up" are available -->
     {{ else }}
     <div class="bottom">    
         <a href="/login"> <button type="submit">Войти</button></a>
@@ -27,7 +27,7 @@
     {{ end }}
     </div>
 
-
+<!-- If user is authenticated, displaying greeting -->
     {{if .AuthUser}}
     {{range .PostScroll}}
  <div>
@@ -35,7 +35,7 @@
  </div>
     {{end}}
  {{end}} 
-
+<!-- Displaying of all posts -->
 {{if .PostScroll}}
     {{range .PostScroll}}
     <div>

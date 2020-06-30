@@ -38,6 +38,7 @@ func (d *Database) GetAllThreads() []*model.Thread {
 		fmt.Println("thread query error")
 		return nil
 	}
+	defer res.Close()
 	for res.Next() {
 		thread := model.NewThread()
 		if err := res.Scan(&thread.ID, &thread.Name); err != nil {

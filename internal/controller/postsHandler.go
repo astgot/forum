@@ -16,6 +16,7 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
+		// Check user authorization
 		cookie, err := r.Cookie("authenticated")
 		if err != nil {
 			http.Error(w, "Not Authorized", http.StatusUnauthorized)
@@ -28,6 +29,7 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			http.Error(w, "Something went wrong", http.StatusInternalServerError) // Check workflow of DB
 			return
 		}
+		// Gathering post data
 		post := model.NewPost()
 		thread := model.NewThread()
 		if r.Method == "POST" {
@@ -58,7 +60,8 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 	}
 }
 
-// PostView ...
+// PostView ... (/post?id=)
+//(single post viewing -> to see comments, rate count OR if user is authenticated, he able to add comments and rate post here)
 func (m *Multiplexer) PostView() http.HandlerFunc {
 
 	type PostAttr struct {
@@ -80,7 +83,7 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 		}
 		cookie, err := r.Cookie("authenticated")
 		if err != nil {
-
+			// If user is guest
 			postAttr := &PostAttr{}
 			singlePost.Post, err = m.db.GetPostByPID(int64(id))
 			if err != nil {

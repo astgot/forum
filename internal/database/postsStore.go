@@ -21,6 +21,7 @@ func (d *Database) InsertPostInfo(p *model.Post) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
+	// to get PostID of new post for error handling in DB
 	id, err := res.LastInsertId()
 	if err != nil {
 		return -1, err
@@ -34,10 +35,12 @@ func (d *Database) GetPosts() ([]*model.Post, error) {
 	if err := d.Open(); err != nil {
 		return nil, err
 	}
-	res, err := d.db.Query("SELECT * FROM Posts ORDER BY post_id DESC")
+	// show posts in reverse order (in the beginning fresh posts)
+	res, err := d.db.Query("SELECT * FROM Posts ORDER BY post_id DESC") // DESC - in reverse order
 	if err != nil {
 		return nil, err
 	}
+	defer res.Close()
 	for res.Next() {
 		post := model.NewPost()
 		if err := res.Scan(&post.PostID, &post.UserID, &post.Author, &post.Title, &post.Content, &post.CreationDate); err != nil {

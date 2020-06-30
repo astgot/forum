@@ -2,7 +2,7 @@ package controller
 
 import "strings"
 
-// CheckNumberOfThreads ...
+// CheckNumberOfThreads ... (when user create post)
 func CheckNumberOfThreads(input string) []string {
 	new := strings.ToLower(input)
 	done := []string{}

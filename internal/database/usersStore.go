@@ -18,7 +18,7 @@ func (d *Database) Create(u *model.Users) (*model.Users, error) {
 		fmt.Println(err.Error())
 		return nil, err
 	}
-
+	// assign UserID to model 'User'
 	id, _ := res.LastInsertId()
 	u.ID = id
 
@@ -55,7 +55,7 @@ func (d *Database) FindByEmail(email string) (*model.Users, error) {
 		&u.Email,
 		&u.EncryptedPwd,
 	); err != nil {
-		fmt.Println("asas")
+		fmt.Println("FindByEmail() error")
 		return nil, err
 	}
 

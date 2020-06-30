@@ -26,7 +26,7 @@ func (d *Database) GetThreadOfPost(postID int64) ([]*model.Thread, error) {
 	if err != nil { // if err == sql.ErrNoRows ---> if no category in the post
 		return nil, err
 	}
-
+	defer res.Close()
 	/* Here we retrieve all threads relating with one single post*/
 	for res.Next() {
 		postMap := model.NewPostMap()

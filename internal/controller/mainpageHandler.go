@@ -24,11 +24,11 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 			http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
-		posts := m.GetAllPosts(w) // fix order of the post (latest posts in the beginning)
+		posts := m.GetAllPosts(w)
 
 		cookie, err := r.Cookie("authenticated")
 		if err != nil {
-
+			// if user is guest, retrieve all posts for displaying
 			for _, post := range posts {
 				guest := &PostRaw{}
 				// guest.Author, _ = m.db.FindByUserID(post.UserID)
@@ -40,6 +40,7 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 			return
 
 		}
+		// if User is authenticated
 		user, _ := m.db.GetUserByCookie(cookie.Value)
 		mainPage.AuthUser = user
 		auth := &PostRaw{}
