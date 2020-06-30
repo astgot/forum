@@ -51,7 +51,7 @@ func (d *Database) GetPosts() ([]*model.Post, error) {
 }
 
 // GetPostByPID ...
-func (d *Database) GetPostByPID(pid int64) *model.Post {
+func (d *Database) GetPostByPID(pid int64) (*model.Post, error) {
 	post := model.NewPost()
 	if err := d.db.QueryRow("SELECT author, title, content, creationDate FROM Posts WHERE post_id = ?", pid).Scan(
 		&post.Author,
@@ -59,7 +59,7 @@ func (d *Database) GetPostByPID(pid int64) *model.Post {
 		&post.Content,
 		&post.CreationDate,
 	); err != nil {
-		return nil
+		return nil, err
 	}
-	return post
+	return post, nil
 }

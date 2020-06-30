@@ -44,7 +44,7 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 		mainPage.AuthUser = user
 		auth := &PostRaw{}
 		for _, post := range posts {
-			auth.Post = m.db.GetPostByPID(post.PostID)
+			auth.Post, _ = m.db.GetPostByPID(post.PostID)
 			auth.Threads, err = m.db.GetThreadOfPost(post.PostID)
 			if err != nil {
 				http.Error(w, "Threads retrieving error", http.StatusInternalServerError)
