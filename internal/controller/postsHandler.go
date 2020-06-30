@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/astgot/forum/internal/model"
@@ -52,6 +54,59 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 		} else if r.Method == "GET" {
 			tpl.ExecuteTemplate(w, "postCreate.html", nil)
 		}
+
+	}
+}
+
+// PostView ...
+func (m *Multiplexer) PostView() http.HandlerFunc {
+
+	type PostAttr struct {
+		Threads []*model.Thread
+		// Comments, Likes, Dislikes
+	}
+	var singlePost struct {
+		PostInfo []*PostAttr
+		AuthUser *model.Users
+		Post     *model.Post
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		id, errID := strconv.Atoi(r.URL.Query().Get("id"))
+		fmt.Println(id, "<---")
+		if errID != nil {
+			http.Error(w, "Invalid input", http.StatusBadRequest)
+			return
+		}
+		cookie, err := r.Cookie("authenticated")
+		if err != nil {
+
+			postAttr := &PostAttr{}
+			singlePost.Post, err = m.db.GetPostByPID(int64(id))
+			if err != nil {
+				fmt.Println("Error on PostView() function")
+				http.Error(w, "The post not found", http.StatusNotFound)
+				return
+			}
+			postAttr.Threads, _ = m.db.GetThreadOfPost(int64(id))
+			singlePost.PostInfo = append(singlePost.PostInfo, postAttr)
+			tpl.ExecuteTemplate(w, "postView.html", singlePost)
+			return
+		}
+		postAttr := &PostAttr{}
+		user, _ := m.db.GetUserByCookie(cookie.Value)
+		singlePost.AuthUser = user
+		singlePost.Post, err = m.db.GetPostByPID(int64(id))
+		if err != nil {
+			fmt.Println("Error on PostView() function")
+			http.Error(w, "The post not found", http.StatusNotFound)
+			return
+		}
+		postAttr.Threads, _ = m.db.GetThreadOfPost(int64(id))
+		singlePost.PostInfo = append(singlePost.PostInfo, postAttr)
+		tpl.ExecuteTemplate(w, "postView.html", singlePost)
+
+		// Add function to add Comments, rate Comments or Post
 
 	}
 }
