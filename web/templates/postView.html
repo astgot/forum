@@ -18,9 +18,6 @@
         <a href="/create"><button type="submit">Создать пост</button></a>
     </div>
 
-    <div class = "author">
-        <h1>Author of the post is {{ .Users.Username }}</h1>
-    </div>
     {{ else }}
     <div class="bottom">
         <a href="/"><button type="submit">Главная страница</button></a>
@@ -30,6 +27,12 @@
     {{ end }}
     </div>
     
+    {{ if .AuthUser }}
+    <div class = "author">
+        <h1>Author of the post is {{ .AuthUser.Username }}</h1>
+    </div>
+    {{end}}
+
     {{ if .PostInfo }}
         
     <div class = "post">
