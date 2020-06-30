@@ -11,15 +11,23 @@
         <div class="forum">
         <h1>FORUM</h1>
     </div>
+    
+    {{if .AuthUser}}
+
         <div class="bottom">
             <a href="/create"><button type="submit">Создать пост</button></a>
-            <a href="/login"> <button type="submit">Войти</button></a>
-        <a href="/signup"><button type="submit">Регистрация</button></a>
-        <a href="/logout"><button type="submit">Выйти</button></a>
-        
-    </div>
-    </div>
+            <a href="/logout"><button type="submit">Выйти</button></a>
+        </div>
     
+    {{ else }}
+    <div class="bottom">    
+        <a href="/login"> <button type="submit">Войти</button></a>
+        <a href="/signup"><button type="submit">Регистрация</button></a> 
+    </div>
+    {{ end }}
+    </div>
+
+
     {{if .AuthUser}}
     {{range .PostScroll}}
  <div>
@@ -33,7 +41,8 @@
     <div>
        
         <p>{{.Post.Author}}</p>
-        <p>{{.Post.Title}}</p>
+        <p><a target="_blank" href="/post?id={{ .Post.PostID }}">{{.Post.Title}}</a></p>
+        <p>Threads: {{range .Threads}}#{{.Name}} {{end}}</p>
         <p>{{.Post.Content}}</p>
         <p>{{.Post.CreationDate}}</p>
         <br>
