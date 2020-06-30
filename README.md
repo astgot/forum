@@ -1,11 +1,11 @@
-#Forum
+Forum
 
 To run:
 
-[ ```go run cmd/app/main.go``` ]
+[ go run cmd/app/main.go ]
 
 
-##Front-end tasks:
+Front-end tasks:
 
 
 Errors in "signup.html" make red;
