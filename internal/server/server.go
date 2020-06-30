@@ -47,6 +47,7 @@ func (s *Server) ConfigureRouter() {
 	s.mux.Mux.HandleFunc("/logout", s.mux.LogoutHandle())
 	s.mux.Mux.HandleFunc("/confirmation", controller.ConfirmHandler)
 	s.mux.Mux.HandleFunc("/create", s.mux.CreatePostHandler())
+	s.mux.Mux.HandleFunc("/post", s.mux.PostView())
 	return
 }
 
