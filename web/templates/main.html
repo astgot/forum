@@ -41,7 +41,7 @@
     <div>
        
         <p>{{.Post.Author}}</p>
-        <p><a target="_blank" href="/post?id={{ .Post.PostID }}">{{.Post.Title}}</a></p>
+        <p><a target="_blank" rel="noopener noreferrer" href="/post?id={{ .Post.PostID }}">{{.Post.Title}}</a></p>
         <p>Threads: {{range .Threads}}#{{.Name}} {{end}}</p>
         <p>{{.Post.Content}}</p>
         <p>{{.Post.CreationDate}}</p>
