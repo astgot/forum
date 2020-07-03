@@ -44,6 +44,10 @@
         <p><a target="_blank" rel="noopener noreferrer" href="/post?id={{ .Post.PostID }}">{{.Post.Title}}</a></p>
         <p>Threads: {{range .Threads}}#{{.Name}} {{end}}</p>
         <p>{{.Post.Content}}</p>
+        <p><a href="/rate?post_id={{ .Post.PostID }}">Like</a></p>
+        <p>{{.PostRate.LikeCount}}</p>
+        <p><a href="/rate?post_id=-{{ .Post.PostID }}">Dislike</a></p>
+        <p>{{.PostRate.DislikeCount}}</p>
         <p>{{.Post.CreationDate}}</p>
         <br>
         <br>

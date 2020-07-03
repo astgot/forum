@@ -11,8 +11,9 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 
 	// Need to create structure to show array of Users, Posts, Comments, Categories for arranging them in HTML
 	type PostRaw struct {
-		Post    *model.Post
-		Threads []*model.Thread
+		Post     *model.Post
+		Threads  []*model.Thread
+		PostRate *model.PostRating
 	}
 	var mainPage struct {
 		AuthUser   *model.Users
@@ -34,6 +35,7 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 				// guest.Author, _ = m.db.FindByUserID(post.UserID)
 				guest.Post = post
 				guest.Threads, _ = m.db.GetThreadOfPost(post.PostID)
+				guest.PostRate = m.db.GetRateCountOfPost(post.PostID)
 				mainPage.PostScroll = append(mainPage.PostScroll, guest)
 			}
 			tpl.ExecuteTemplate(w, "main.html", mainPage)
