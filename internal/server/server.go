@@ -31,7 +31,7 @@ func (s *Server) Start() error {
 	}
 	s.ConfigureRouter()
 
-	fmt.Println("Server is starting on port 8080...")
+	fmt.Println("Server is working on port :8080 ...")
 
 	return http.ListenAndServe(s.config.WebPort, s.mux.Mux)
 
@@ -48,6 +48,7 @@ func (s *Server) ConfigureRouter() {
 	s.mux.Mux.HandleFunc("/confirmation", controller.ConfirmHandler)
 	s.mux.Mux.HandleFunc("/create", s.mux.CreatePostHandler())
 	s.mux.Mux.HandleFunc("/post", s.mux.PostView())
+	s.mux.Mux.HandleFunc("/rate", s.mux.LikeHandler())
 	return
 }
 
