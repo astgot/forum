@@ -58,6 +58,54 @@ func (d *Database) BuildSchema() error {
 	CheckErr(err)
 	postMap.Exec()
 
+	comments, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS Comments (
+		ID INTEGER PRIMARY KEY NOT NULL,
+		postID INTEGER NOT NULL,
+		userID INTEGER NOT NULL,
+		content TEXT NOT NULL, 
+		creationDate TEXT NOT NULL,
+		FOREIGN KEY(postID) REFERENCES Posts(post_id),
+		FOREIGN KEY(userID) REFERENCES Users(id)
+		)`)
+	defer comments.Close()
+	CheckErr(err)
+	comments.Exec()
+
+	postRating, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS PostRating (
+		postID INTEGER NOT NULL,
+		likeCount INTEGER NOT NULL,
+		dislikeCount INTEGER NOT NULL,
+		FOREIGN KEY(postID) REFERENCES Posts(post_id)
+	)`)
+	defer postRating.Close()
+	CheckErr(err)
+	postRating.Exec()
+
+	commRating, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS CommentRating (
+		commentID INTEGER NOT NULL,
+		postID INTEGER NOT NULL,
+		likeCount INTEGER NOT NULL,
+		dislikeCount INTEGER NOT NULL,
+		FOREIGN KEY(commentID) REFERENCES Comments(ID),
+		FOREIGN KEY(postID) REFERENCES Posts(post_id)
+	)`)
+	defer commRating.Close()
+	CheckErr(err)
+	commRating.Exec()
+
+	rateUP, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS RateUserPost (
+		userID INTEGER NOT NULL,
+		postID INTEGER NOT NULL,
+		isRated TEXT NOT NULL,
+		FOREIGN KEY(userID) REFERENCES Users(ID),
+		FOREIGN KEY(postID) REFERENCES Posts(post_id)
+	)`)
+	defer rateUP.Close()
+	CheckErr(err)
+	rateUP.Exec()
+	//RateUserPost
+	//RateUserComm
+
 	return nil
 }
 
