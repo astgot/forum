@@ -10,8 +10,9 @@ import (
 func (d *Database) GetRateCountOfPost(postID int64) *model.PostRating {
 	// Здесь нужно разобраться
 	rates := model.NewPostRating()
-	if err := d.db.QueryRow("SELECT likeCount AND dislikeCount FROM PostRating WHERE postID = ?", postID).
-		Scan(&rates.LikeCount,
+	if err := d.db.QueryRow("SELECT * FROM PostRating WHERE postID = ?", postID).
+		Scan(&rates.PostID,
+			&rates.LikeCount,
 			&rates.DislikeCount,
 		); err != nil {
 		// It means nobody rated the post, likeCount and dislikeCount now is zero
@@ -38,13 +39,16 @@ func (d *Database) AddRateToPost(l *model.PostRating, uid int64) bool {
 			defer stmnt.Close()
 			_, err = stmnt.Exec(l.PostID, rate.LikeCount+1, rate.DislikeCount)
 			if err != nil {
-				fmt.Println("db Insert PostRating error")
+				fmt.Println("db Insert PostRating error", err.Error())
 				return false
 			}
 
 		} else {
 			// Update column "likeCount" in the table
-			if err := d.db.QueryRow("UPDATE PostRating SET likeCount=? WHERE postID=?", rate.LikeCount+1, l.PostID); err != nil {
+			stmnt, err := d.db.Prepare("UPDATE PostRating SET likeCount=? WHERE postID=?")
+			defer stmnt.Close()
+			_, err = stmnt.Exec(rate.LikeCount+1, l.PostID)
+			if err != nil {
 				fmt.Println("update likecount error")
 				return false
 			}
@@ -61,7 +65,10 @@ func (d *Database) AddRateToPost(l *model.PostRating, uid int64) bool {
 			}
 		} else {
 			// Update column "dislikeCount" in the table
-			if err := d.db.QueryRow("UPDATE PostRating SET dislikeCount=? WHERE postID=?", int64(rate.DislikeCount+1), l.PostID); err != nil {
+			stmnt, err := d.db.Prepare("UPDATE PostRating SET dislikeCount=? WHERE postID=?")
+			defer stmnt.Close()
+			_, err = stmnt.Exec(rate.DislikeCount+1, l.PostID)
+			if err != nil {
 				fmt.Println("update dislikecount error")
 				return false
 			}
@@ -69,8 +76,8 @@ func (d *Database) AddRateToPost(l *model.PostRating, uid int64) bool {
 
 	}
 
-	stmnt, err := d.db.Prepare("INSERT INTO RateUserPost (userID, postID, isRated) VALUES (?, ?, ?)")
-	_, err = stmnt.Exec(uid, l.PostID, "yes")
+	stmnt, err := d.db.Prepare("INSERT INTO RateUserPost (userID, postID) VALUES (?, ?)")
+	_, err = stmnt.Exec(uid, l.PostID)
 	if err != nil {
 		fmt.Println("RateUserPost error")
 		return false
@@ -92,10 +99,24 @@ func (d *Database) AddRateToComment(l *model.CommentRating) *model.CommentRating
 
 // IsUserRatePost ...
 func (d *Database) IsUserRatePost(uid, pid int64) bool {
-	if err := d.db.QueryRow("SELECT isRated FROM RateUserPost WHERE userID=? AND postID=?", uid, pid); err != nil {
+	var comp int64
+	// need to check all rated posts of the user
+	res, err := d.db.Query("SELECT postID FROM RateUserPost WHERE userID=?", uid, pid)
+	if err != nil {
 		return false
 	}
-	return true
+	defer res.Close()
+	// Check postID is rated or not
+	for res.Next() {
+		if err := res.Scan(&comp); err != nil {
+			return false
+		}
+		if comp == pid {
+			return true
+		}
+		comp = 0
+	}
+	return false
 }
 
 // IsUserRateComm ...

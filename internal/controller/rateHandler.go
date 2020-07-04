@@ -35,8 +35,7 @@ func (m *Multiplexer) LikeHandler() http.HandlerFunc {
 			isPost = false
 
 		}
-		fmt.Println(id, "postID")
-
+		// if "id" is negative number, it will be dislike
 		if id < 0 {
 			Islike = false
 			id *= -1
@@ -47,8 +46,6 @@ func (m *Multiplexer) LikeHandler() http.HandlerFunc {
 			http.Error(w, "Something went wrong", http.StatusInternalServerError)
 			return
 		}
-
-		// if "id" is negative number, it will be dislike
 
 		if isPost {
 			like := model.NewPostRating()
