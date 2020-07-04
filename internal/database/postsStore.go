@@ -44,8 +44,9 @@ func (d *Database) GetPosts() ([]*model.Post, error) {
 	for res.Next() {
 		post := model.NewPost()
 		if err := res.Scan(&post.PostID, &post.UserID, &post.Author, &post.Title, &post.Content, &post.CreationDate); err != nil {
-			// return nil, err
-			fmt.Println(err, "query test")
+			fmt.Println(err.Error(), "GetPosts() postsStore.go")
+			return nil, err
+
 		}
 		posts = append(posts, post)
 

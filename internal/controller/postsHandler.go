@@ -76,7 +76,10 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		id, errID := strconv.Atoi(r.URL.Query().Get("id"))
-		fmt.Println(id, "<---")
+		// handling double post with id=1
+		if id == 0 {
+			id = -1
+		}
 		if errID != nil {
 			http.Error(w, "Invalid input", http.StatusBadRequest)
 			return

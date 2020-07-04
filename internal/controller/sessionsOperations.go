@@ -34,7 +34,7 @@ func (m *Multiplexer) AddSession(w http.ResponseWriter, sessionName string, user
 	http.SetCookie(w, cookieSession)
 	if sessionName != "guest" {
 		if _, err := m.db.InsertSession(user, cookieSession); err != nil {
-			fmt.Println("Error")
+			fmt.Println("Error on InsertSession() sessionsOperations.go")
 		}
 	}
 
