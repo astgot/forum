@@ -12,13 +12,14 @@ func (d *Database) InsertSession(u *model.Users, session *http.Cookie) (*model.S
 		return nil, err
 	}
 	cookie := model.NewSession()
-	if err := d.db.QueryRow("INSERT INTO Sessions (userID, cookieName, cookieValue) VALUES (?, ?, ?)", u.ID, session.Name, session.Value).Scan(
-		&cookie.UserID,
-		&cookie.SessionName,
-		&cookie.SessionValue,
-	); err != nil {
+	stmnt, err := d.db.Prepare("INSERT INTO Sessions (userID, cookieName, cookieValue) VALUES (?, ?, ?)")
+	_, err = stmnt.Exec(u.ID, session.Name, session.Value)
+	if err != nil {
 		return nil, err
 	}
+	cookie.SessionName = session.Name
+	cookie.SessionValue = session.Value
+	cookie.UserID = u.ID
 	return cookie, nil
 }
 
