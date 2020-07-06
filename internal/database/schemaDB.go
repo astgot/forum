@@ -96,6 +96,7 @@ func (d *Database) BuildSchema() error {
 	rateUP, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS RateUserPost (
 		userID INTEGER NOT NULL,
 		postID INTEGER NOT NULL,
+		kind INTEGER NOT NULL,
 		FOREIGN KEY(userID) REFERENCES Users(ID),
 		FOREIGN KEY(postID) REFERENCES Posts(post_id)
 	)`)

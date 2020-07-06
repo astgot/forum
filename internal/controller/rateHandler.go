@@ -65,15 +65,17 @@ func (m *Multiplexer) LikeHandler() http.HandlerFunc {
 			*/
 			isRated := m.db.IsUserRatePost(user.ID, int64(id))
 			if isRated {
-				// for some time
-				http.Error(w, "You rated this post", http.StatusForbidden)
-				// execute template (You rated this post)
-				return
-			}
-			if ok := m.db.AddRateToPost(like, user.ID); !ok {
-				http.Error(w, "Something went wrong", http.StatusInternalServerError)
-				fmt.Println("AddRatePost() error")
-				return
+				if ok := m.db.DeleteRateFromPost(like, user.ID); !ok {
+					fmt.Println("DeleteRateOfPost error")
+					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					return
+				}
+			} else {
+				if ok := m.db.AddRateToPost(like, user.ID); !ok {
+					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					fmt.Println("AddRatePost() error")
+					return
+				}
 			}
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 
