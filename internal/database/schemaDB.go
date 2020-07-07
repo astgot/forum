@@ -103,7 +103,6 @@ func (d *Database) BuildSchema() error {
 	defer rateUP.Close()
 	CheckErr(err)
 	rateUP.Exec()
-	//RateUserPost
 	//RateUserComm
 
 	return nil

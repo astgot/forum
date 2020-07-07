@@ -8,7 +8,6 @@ import (
 
 // GetRateCountOfPost ...
 func (d *Database) GetRateCountOfPost(postID int64) *model.PostRating {
-	// Здесь нужно разобраться
 	rates := model.NewPostRating()
 	if err := d.db.QueryRow("SELECT * FROM PostRating WHERE postID = ?", postID).
 		Scan(&rates.PostID,
@@ -64,6 +63,53 @@ func (d *Database) DeleteLike(likeCnt, postID int64) bool {
 	if err != nil {
 		fmt.Println("update likecount error")
 		return false
+	}
+	return true
+}
+
+// DeleteRateFromDB ...
+func (d *Database) DeleteRateFromDB(uid, pid int64) bool {
+	stmnt, err := d.db.Prepare("DELETE FROM RateUserPost WHERE userID=? AND postID=?")
+	defer stmnt.Close()
+	_, err = stmnt.Exec(uid, pid)
+	if err != nil {
+		return false
+	}
+	// check posts rateCounts, if [0, 0] delete row from PostRating
+	rates := d.GetRateCountOfPost(pid)
+	if rates.DislikeCount == 0 && rates.LikeCount == 0 {
+		stmnt, err := d.db.Prepare("DELETE FROM PostRating WHERE postID=?")
+		defer stmnt.Close()
+		_, err = stmnt.Exec(pid)
+		if err != nil {
+			return false
+		}
+	}
+
+	return true
+}
+
+// UpdateRate ...
+func (d *Database) UpdateRate(before, uid, pid int64) bool {
+	// change to like
+	if before == 0 {
+
+		stmnt, err := d.db.Prepare("UPDATE RateUserPost SET kind=1 WHERE postID=? AND userID=?")
+		defer stmnt.Close()
+		_, err = stmnt.Exec(pid, uid)
+		if err != nil {
+			fmt.Println("update likecount error")
+			return false
+		}
+		// change to dislike
+	} else {
+		stmnt, err := d.db.Prepare("UPDATE RateUserPost SET kind=0 WHERE postID=? AND userID=?")
+		defer stmnt.Close()
+		_, err = stmnt.Exec(pid, uid)
+		if err != nil {
+			fmt.Println("update likecount error")
+			return false
+		}
 	}
 	return true
 }

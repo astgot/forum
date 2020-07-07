@@ -55,7 +55,7 @@ func (d *Database) AddRateToPost(l *model.PostRating, uid int64) bool {
 
 	}
 
-	stmnt, err := d.db.Prepare("INSERT INTO RateUserPost (userID, postID, kind) VALUES (?, ?)")
+	stmnt, err := d.db.Prepare("INSERT INTO RateUserPost (userID, postID, kind) VALUES (?, ?, ?)")
 	_, err = stmnt.Exec(uid, l.PostID, kind)
 	if err != nil {
 		fmt.Println("RateUserPost error")
@@ -90,6 +90,10 @@ func (d *Database) DeleteRateFromPost(rate *model.PostRating, uid int64) bool {
 		if ok := d.DeleteLike(rate.LikeCount, rate.PostID); !ok {
 			return false
 		}
+		// delete row from RateUserPost
+		if ok := d.DeleteRateFromDB(uid, rate.PostID); !ok {
+			return false
+		}
 
 	} else if before == 1 && !(rate.Like) {
 		//delete like, add dislike
@@ -99,10 +103,18 @@ func (d *Database) DeleteRateFromPost(rate *model.PostRating, uid int64) bool {
 		if ok := d.AddDislike(rate.DislikeCount, rate.PostID); !ok {
 			return false
 		}
+		// Update kind equal to '0'
+		if ok := d.UpdateRate(before, uid, rate.PostID); !ok {
+			return false
+		}
 
 	} else if before == 0 && !(rate.Like) {
 		//delete dislike
 		if ok := d.DeleteDislike(rate.DislikeCount, rate.PostID); !ok {
+			return false
+		}
+		// delete row from RateUserPost
+		if ok := d.DeleteRateFromDB(uid, rate.PostID); !ok {
 			return false
 		}
 	} else if before == 0 && rate.Like {
@@ -113,7 +125,13 @@ func (d *Database) DeleteRateFromPost(rate *model.PostRating, uid int64) bool {
 		if ok := d.AddLike(rate.LikeCount, rate.PostID); !ok {
 			return false
 		}
+		// Update kind equal to '1'
+		if ok := d.UpdateRate(before, uid, rate.PostID); !ok {
+			return false
+		}
 	}
 
 	return true
 }
+
+// If server delete like, and after it becomes [0 0] need to delete row from PostRating
