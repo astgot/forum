@@ -29,11 +29,9 @@
 
 <!-- If user is authenticated, displaying greeting -->
     {{if .AuthUser}}
-    {{range .PostScroll}}
  <div>
-     <h1>Hi, {{.Post.Author}}</h1>
+     <h1>Hi, {{ .AuthUser.Username }}</h1>
  </div>
-    {{end}}
  {{end}} 
 <!-- Displaying of all posts -->
 {{if .PostScroll}}
@@ -44,14 +42,11 @@
         <p><a target="_blank" rel="noopener noreferrer" href="/post?id={{ .Post.PostID }}">{{.Post.Title}}</a></p>
         <p>Threads: {{range .Threads}}#{{.Name}} {{end}}</p>
         <p>{{.Post.Content}}</p>
-        <p><a href="/rate?post_id={{ .Post.PostID }}">Like</a></p>
-        <p>{{.PostRate.LikeCount}}</p>
-        <p><a href="/rate?post_id=-{{ .Post.PostID }}">Dislike</a></p>
-        <p>{{.PostRate.DislikeCount}}</p>
+        <p><a href="/rate?post_id={{ .Post.PostID }}">Like</a>{{.PostRate.LikeCount}}</p>
+        <p><a href="/rate?post_id=-{{ .Post.PostID }}">Dislike</a>{{.PostRate.DislikeCount}}</p>
         <p>{{.Post.CreationDate}}</p>
         <br>
         <br>
-         
     </div>
     {{end}}
 {{end}}
