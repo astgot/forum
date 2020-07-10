@@ -17,7 +17,7 @@
         <a href="/"><button type="submit">Главная страница</button></a>
         <a href="/create"><button type="submit">Создать пост</button></a>
     </div>
-<!-- If user is authenticated, buttons "main page", "log in" and "sign up" are available -->
+    <!-- If user is authenticated, buttons "main page", "log in" and "sign up" are available -->
     {{ else }}
     <div class="bottom">
         <a href="/"><button type="submit">Главная страница</button></a>
@@ -44,6 +44,26 @@
         <br>
         <br>
     </div>
+    {{ end }}
+    {{ if .AuthUser }}
+    <div>
+        <form method="POST">
+            <textarea name="comment" placeholder="Comment this post..."></textarea>
+            <button type="submit">Comment</button>
+        </form>
+    </div>
+    {{ end }}
+    <!-- Displaying Comments -->
+    {{ if .PostInfo }}
+        {{ range .PostInfo }}
+            {{ range .Comms }}
+            <div>
+                <p>{{ .Author }}</p>
+                <p>{{ .Content }}</p>
+                <p>{{ .CreationDate }}</p>
+            </div>
+            {{ end }}
+        {{ end }}
     {{ end }}
     <!-- Need to add likes, dislikes, comments -->
     <!-- If auth user, add functions to rate post, add comments  -->

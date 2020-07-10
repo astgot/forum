@@ -43,6 +43,7 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			post.CreationDate = time.Now().Format("January 2 15:04")
 			post.PostID, _ = m.db.InsertPostInfo(post)
 			if post.PostID == -1 {
+				fmt.Println("post.PostID == -1")
 				http.Error(w, "Invalid input", http.StatusBadRequest)
 				return
 			}
@@ -51,11 +52,12 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 				m.db.InsertThreadInfo(threadName, post.PostID)
 			}
 
-			http.Redirect(w, r, "/main", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 
-		} else if r.Method == "GET" {
-			tpl.ExecuteTemplate(w, "postCreate.html", nil)
 		}
+		// else if r.Method == "GET" {
+		// 	tpl.ExecuteTemplate(w, "postCreate.html", nil)
+		// }
 
 	}
 }
@@ -66,7 +68,8 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 
 	type PostAttr struct {
 		Threads []*model.Thread
-		// Comments, Likes, Dislikes
+		Comms   []*model.Comments
+		//Likes, Dislikes
 	}
 	var singlePost struct {
 		PostInfo []*PostAttr
@@ -81,8 +84,12 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			id = -1
 		}
 		if errID != nil {
-			http.Error(w, "Invalid input", http.StatusBadRequest)
-			return
+			fmt.Println("errID != nil")
+			comment := r.URL.Query().Get("comment")
+			if comment == "" && errID != nil {
+				http.Error(w, "Invalid input", http.StatusBadRequest)
+				return
+			}
 		}
 		cookie, err := r.Cookie("authenticated")
 		if err != nil {
@@ -94,6 +101,11 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 				http.Error(w, "The post not found", http.StatusNotFound)
 				return
 			}
+			postAttr.Comms, err = m.db.GetCommentsOfPost(int64(id))
+			if err != nil {
+				fmt.Println("error Comms")
+			}
+			fmt.Println(postAttr.Comms, "<---")
 			postAttr.Threads, _ = m.db.GetThreadOfPost(int64(id))
 			singlePost.PostInfo = append(singlePost.PostInfo, postAttr)
 			tpl.ExecuteTemplate(w, "postView.html", singlePost)
@@ -108,10 +120,29 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			http.Error(w, "The post not found", http.StatusNotFound)
 			return
 		}
+		postAttr.Comms, err = m.db.GetCommentsOfPost(int64(id))
+		if err != nil {
+			fmt.Println("error Comments")
+		}
+		fmt.Println(postAttr.Comms, "<---")
 		postAttr.Threads, _ = m.db.GetThreadOfPost(int64(id))
 		singlePost.PostInfo = append(singlePost.PostInfo, postAttr)
 		tpl.ExecuteTemplate(w, "postView.html", singlePost)
-
+		if r.Method == "POST" {
+			comment := model.NewComment()
+			r.ParseForm()
+			comment.Content = r.PostFormValue("comment")
+			comment.CreationDate = time.Now().Format("Jan 2 15:04")
+			comment.PostID = int64(id)
+			comment.Author = user.Username // replace to comment's author?
+			if ok := m.db.AddComment(comment); !ok {
+				fmt.Println("AddComment error")
+				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+				return
+			}
+			// tpl.ExecuteTemplate(w, "postView.html", singlePost)
+			// http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
 		// Add function to add Comments, rate Comments or Post
 
 	}

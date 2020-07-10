@@ -61,12 +61,12 @@ func (d *Database) BuildSchema() error {
 	comments, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS Comments (
 		ID INTEGER PRIMARY KEY NOT NULL,
 		postID INTEGER NOT NULL,
-		userID INTEGER NOT NULL,
+		author TEXT NOT NULL,
 		content TEXT NOT NULL, 
 		creationDate TEXT NOT NULL,
-		FOREIGN KEY(postID) REFERENCES Posts(post_id),
-		FOREIGN KEY(userID) REFERENCES Users(id)
+		FOREIGN KEY(postID) REFERENCES Posts(post_id)
 		)`)
+	// FOREIGN KEY(userID) REFERENCES Users(id)
 	defer comments.Close()
 	CheckErr(err)
 	comments.Exec()

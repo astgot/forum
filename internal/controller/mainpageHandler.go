@@ -14,6 +14,7 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 		Post     *model.Post
 		Threads  []*model.Thread
 		PostRate *model.PostRating
+		Comments []*model.Comments
 	}
 	var mainPage struct {
 		AuthUser   *model.Users
@@ -32,6 +33,7 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 			// if user is guest, retrieve all posts for displaying
 			for _, post := range posts {
 				guest := &PostRaw{}
+				guest.Comments, _ = m.db.GetCommentsOfPost(post.PostID)
 				// guest.Author, _ = m.db.FindByUserID(post.UserID)
 				guest.Post = post
 				guest.Threads, _ = m.db.GetThreadOfPost(post.PostID)
