@@ -67,8 +67,8 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 func (m *Multiplexer) PostView() http.HandlerFunc {
 
 	type PostAttr struct {
-		Threads []*model.Thread
-		Comms   []*model.Comments
+		Threads  []*model.Thread
+		Comments []*model.Comments
 		//Likes, Dislikes
 	}
 	var singlePost struct {
@@ -101,11 +101,7 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 				http.Error(w, "The post not found", http.StatusNotFound)
 				return
 			}
-			postAttr.Comms, err = m.db.GetCommentsOfPost(int64(id))
-			if err != nil {
-				fmt.Println("error Comms")
-			}
-			fmt.Println(postAttr.Comms, "<---")
+			postAttr.Comments, err = m.db.GetCommentsOfPost(int64(id))
 			postAttr.Threads, _ = m.db.GetThreadOfPost(int64(id))
 			singlePost.PostInfo = append(singlePost.PostInfo, postAttr)
 			tpl.ExecuteTemplate(w, "postView.html", singlePost)
@@ -120,11 +116,7 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			http.Error(w, "The post not found", http.StatusNotFound)
 			return
 		}
-		postAttr.Comms, err = m.db.GetCommentsOfPost(int64(id))
-		if err != nil {
-			fmt.Println("error Comments")
-		}
-		fmt.Println(postAttr.Comms, "<---")
+		postAttr.Comments, err = m.db.GetCommentsOfPost(int64(id))
 		postAttr.Threads, _ = m.db.GetThreadOfPost(int64(id))
 		singlePost.PostInfo = append(singlePost.PostInfo, postAttr)
 		tpl.ExecuteTemplate(w, "postView.html", singlePost)

@@ -56,7 +56,7 @@
     <!-- Displaying Comments -->
     {{ if .PostInfo }}
         {{ range .PostInfo }}
-            {{ range .Comms }}
+            {{ range .Comments }}
             <div>
                 <p>{{ .Author }}</p>
                 <p>{{ .Content }}</p>
