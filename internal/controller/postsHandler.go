@@ -126,17 +126,15 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			comment.Content = r.PostFormValue("comment")
 			comment.CreationDate = time.Now().Format("January 2 15:04")
 			comment.PostID = int64(id)
-			comment.Author = user.Username // replace to comment's author?
+			comment.Author = user.Username
 			if ok := m.db.AddComment(comment); !ok {
 				fmt.Println("AddComment error")
 				http.Error(w, "Something went wrong", http.StatusInternalServerError)
 				return
 			}
-			// tpl.ExecuteTemplate(w, "postView.html", singlePost)
-			// http.Redirect(w, r, "/", http.StatusSeeOther)
+			postID := strconv.Itoa(id)
+			http.Redirect(w, r, "/post?id="+postID, http.StatusSeeOther)
 		}
-		// Add function to add Comments, rate Comments or Post
-
 	}
 }
 
