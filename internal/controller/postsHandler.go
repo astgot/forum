@@ -54,10 +54,9 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 
+		} else if r.Method == "GET" {
+			tpl.ExecuteTemplate(w, "postCreate.html", nil)
 		}
-		// else if r.Method == "GET" {
-		// 	tpl.ExecuteTemplate(w, "postCreate.html", nil)
-		// }
 
 	}
 }
