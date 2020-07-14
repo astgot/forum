@@ -15,7 +15,7 @@ func (d *Database) AddRateToPost(l *model.PostRating, uid int64) bool {
 	*/
 
 	rate := d.GetRateCountOfPost(l.PostID)
-	fmt.Println(rate.DislikeCount, rate.LikeCount, "rates")
+	fmt.Println(rate.DislikeCount, rate.LikeCount, "<-- post rates")
 	var kind int64
 
 	if l.Like {
@@ -65,8 +65,8 @@ func (d *Database) AddRateToPost(l *model.PostRating, uid int64) bool {
 	return true
 }
 
-// DeleteRateFromPost ...
-func (d *Database) DeleteRateFromPost(rate *model.PostRating, uid int64) bool {
+// UpdateRateOfPost ...
+func (d *Database) UpdateRateOfPost(rate *model.PostRating, uid int64) bool {
 	// 1) What user did now? (like or dislike)
 	// 2) What user have done before?
 	// if user 1) liked and 2) liked ---> Delete like from post

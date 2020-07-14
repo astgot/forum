@@ -33,7 +33,8 @@ func (d *Database) IsUserRatePost(uid, pid int64) bool {
 	// Check postID is rated or not
 	for res.Next() {
 		if err := res.Scan(&comp); err != nil {
-			return false
+			fmt.Println(err.Error(), "IsUserRatePost")
+			// return false
 		}
 		if comp == pid {
 			return true
