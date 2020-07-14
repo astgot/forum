@@ -8,16 +8,18 @@ import (
 	"github.com/astgot/forum/internal/model"
 )
 
-// LikeHandler ...
-func (m *Multiplexer) LikeHandler() http.HandlerFunc {
+// RateHandler ... /rate?post_id= || /rate?comment_id=
+func (m *Multiplexer) RateHandler() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/rate" {
 			http.Error(w, "Not Found", http.StatusNotFound)
 			return
 		}
-		var Islike = true
-		var isPost = true
+		var (
+			Islike = true
+			isPost = true
+		)
 		cookie, err := r.Cookie("authenticated")
 		if err != nil {
 			http.Error(w, "You need to authorize", http.StatusForbidden)
@@ -65,7 +67,7 @@ func (m *Multiplexer) LikeHandler() http.HandlerFunc {
 			*/
 			isRated := m.db.IsUserRatePost(user.ID, int64(id))
 			if isRated {
-				if ok := m.db.DeleteRateFromPost(like, user.ID); !ok {
+				if ok := m.db.UpdateRateOfPost(like, user.ID); !ok {
 					fmt.Println("DeleteRateOfPost error")
 					http.Error(w, "Something went wrong", http.StatusInternalServerError)
 					return
@@ -85,12 +87,29 @@ func (m *Multiplexer) LikeHandler() http.HandlerFunc {
 			comment, err := m.db.GetCommentByID(int64(id))
 			if err != nil {
 				http.Error(w, "The comment not found", http.StatusBadRequest)
+				fmt.Println("GetCommentByID error")
 				return
 			}
-			like.CommentID = comment.CommentID
-			// Need to retrieve post from comment id
+			like.CommentID = int64(id)
+			like.PostID = comment.PostID
+			isRated := m.db.IsUserRateComment(user.ID, like.PostID, like.CommentID)
+			if isRated {
+				if ok := m.db.UpdateRateOfComment(like, user.ID); !ok {
+					fmt.Println("UpdateRateOfComment error")
+					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					return
+				}
 
-			m.db.AddRateToComment(like) // Need to return new rate count
+			} else {
+				if ok := m.db.AddRateToComment(like, user.ID); !ok {
+					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					fmt.Println("AddRateToComment error")
+					return
+				}
+			}
+			postID := strconv.Itoa(int(like.PostID))
+			http.Redirect(w, r, "/post?id="+postID, http.StatusSeeOther)
+
 		}
 
 	}

@@ -103,8 +103,19 @@ func (d *Database) BuildSchema() error {
 	defer rateUP.Close()
 	CheckErr(err)
 	rateUP.Exec()
-	//RateUserComm
 
+	rateUC, err := d.db.Prepare(`CREATE TABLE IF NOT EXISTS RateUserComment (
+		commentID INTEGER NOT NULL,
+		postID INTEGER NOT NULL,
+		userID INTEGER NOT NULL,
+		kind INTEGER NOT NULL,
+		FOREIGN KEY(commentID) REFERENCES Comments(ID),
+		FOREIGN KEY(postID) REFERENCES Posts(post_id),
+		FOREIGN KEY(userID) REFERENCES Users(ID)
+	)`)
+	defer rateUC.Close()
+	CheckErr(err)
+	rateUC.Exec()
 	return nil
 }
 
