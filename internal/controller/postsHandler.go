@@ -79,18 +79,12 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		id, errID := strconv.Atoi(r.URL.Query().Get("id"))
-		// handling double post with id=1
-		if id == 0 {
-			id = -1
-		}
 		if errID != nil {
 			fmt.Println("errID != nil")
-			comment := r.URL.Query().Get("comment")
-			if comment == "" && errID != nil {
-				http.Error(w, "Invalid input", http.StatusBadRequest)
-				return
-			}
+			http.Error(w, "Invalid input", http.StatusBadRequest)
+			return
 		}
+
 		cookie, err := r.Cookie("authenticated")
 		if err != nil {
 			// If user is guest
@@ -102,6 +96,12 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 				return
 			}
 			postAttr.Comments, err = m.db.GetCommentsOfPost(int64(id))
+			commentRate := model.NewCommentRating()
+			for i := 0; i < len(postAttr.Comments); i++ {
+				commentRate = m.db.GetRateCountOfComment(postAttr.Comments[i].CommentID, int64(id))
+				postAttr.Comments[i].LikeCnt = commentRate.LikeCount
+				postAttr.Comments[i].DislikeCnt = commentRate.DislikeCount
+			}
 			postAttr.Threads, _ = m.db.GetThreadOfPost(int64(id))
 			singlePost.PostInfo = append(singlePost.PostInfo, postAttr)
 			tpl.ExecuteTemplate(w, "postView.html", singlePost)
@@ -124,7 +124,7 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			comment := model.NewComment()
 			r.ParseForm()
 			comment.Content = r.PostFormValue("comment")
-			comment.CreationDate = time.Now().Format("Jan 2 15:04")
+			comment.CreationDate = time.Now().Format("January 2 15:04")
 			comment.PostID = int64(id)
 			comment.Author = user.Username // replace to comment's author?
 			if ok := m.db.AddComment(comment); !ok {
@@ -149,5 +149,4 @@ func (m *Multiplexer) GetAllPosts(w http.ResponseWriter) []*model.Post {
 		return nil
 	}
 	return posts
-
 }

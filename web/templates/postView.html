@@ -61,6 +61,10 @@
                 <p>{{ .Author }}</p>
                 <p>{{ .Content }}</p>
                 <p>{{ .CreationDate }}</p>
+            </div>   
+            <div>
+                <p><a href="/rate?comment_id={{.CommentID}}">Like</a>{{.LikeCnt}}</p>
+                <p><a href="/rate?comment_id=-{{.CommentID}}">Dislike</a>{{.DislikeCnt}}</p>
             </div>
             {{ end }}
         {{ end }}
