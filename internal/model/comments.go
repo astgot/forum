@@ -7,6 +7,8 @@ type Comments struct {
 	Author       string `db:"author"`
 	Content      string `db:"content"`
 	CreationDate string `db:"creationDate"`
+	LikeCnt      int64
+	DislikeCnt   int64
 }
 
 // NewComment ...
