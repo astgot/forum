@@ -1,1 +1,0 @@
-sql: no rows in result set --> if username or email does not exit in DB
