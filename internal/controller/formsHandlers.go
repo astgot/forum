@@ -121,14 +121,14 @@ func (m *Multiplexer) LogoutHandle() http.HandlerFunc {
 			cookie, err := r.Cookie("authenticated")
 			if err != nil {
 				m.AddSession(w, "guest", nil)
-				http.Redirect(w, r, "/main", http.StatusSeeOther)
+				http.Redirect(w, r, "/", http.StatusSeeOther)
 				return
 				/*OR http.Error()*/
 			}
 			// fmt.Println("----->", cookie.Value)
 
 			m.DeleteSession(w, cookie.Value)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 
 	}
