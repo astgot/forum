@@ -128,7 +128,7 @@ func (m *Multiplexer) LogoutHandle() http.HandlerFunc {
 			// fmt.Println("----->", cookie.Value)
 
 			m.DeleteSession(w, cookie.Value)
-			http.Redirect(w, r, "/main", http.StatusFound)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 		}
 
 	}
