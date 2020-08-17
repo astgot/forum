@@ -98,7 +98,7 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 			login.ID = m.db.GetUserID(login, check.unameOrEmail)
 			// fmt.Println("ID:", login.ID)
 			m.AddSession(w, "authenticated", login) // Add cookie session after successful authentication
-			http.Redirect(w, r, "/main", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		}
 
@@ -125,8 +125,6 @@ func (m *Multiplexer) LogoutHandle() http.HandlerFunc {
 				return
 				/*OR http.Error()*/
 			}
-			// fmt.Println("----->", cookie.Value)
-
 			m.DeleteSession(w, cookie.Value)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
