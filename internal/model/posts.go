@@ -2,7 +2,7 @@ package model
 
 // Post ...
 type Post struct {
-	PostID       int64 `db:"postID"`
+	ID           int64 `db:"postID"`
 	UserID       int64 `db:"userID"`
 	Title        string
 	Author       string

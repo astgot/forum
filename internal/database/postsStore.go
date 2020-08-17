@@ -43,7 +43,7 @@ func (d *Database) GetPosts() ([]*model.Post, error) {
 	defer res.Close()
 	for res.Next() {
 		post := model.NewPost()
-		if err := res.Scan(&post.PostID, &post.UserID, &post.Author, &post.Title, &post.Content, &post.CreationDate); err != nil {
+		if err := res.Scan(&post.ID, &post.UserID, &post.Author, &post.Title, &post.Content, &post.CreationDate); err != nil {
 			fmt.Println(err.Error(), "GetPosts() postsStore.go")
 			return nil, err
 
