@@ -3,21 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/postCreate.css">
+    <script src="https://kit.fontawesome.com/d326388467.js" crossorigin="anonymous"></script>
+
     <title>Creating Post</title>
 </head>
 <body>
-    <h1>Post Creation Workshop</h1>
-    <form action="/create" method="POST">
-        <div>
-            <p><label>Category</label></p>
-            <p><input type="text" name="thread" placeholder="E.g.: music, art ..."></p>
-            <p><label for="title">Title</label></p>
-            <p><input type="text" name="title"></p>
+
+<header class="header">
+    <div class="container">
+        <div class="forum">
+        <h1><a href="/">FORUM</a></h1>
         </div>
-        <div>
-            <textarea name="postContent" placeholder="What's new?"></textarea>        
+
+        {{if .AuthUser}}
+
+        <div class="bottom signed">
+            <label class="username">{{ .AuthUser.Username }}</label>
+            <a href="/logout"><button type="submit" class="signout"><i class="fas fa-sign-out-alt"></i></button></a>
         </div>
-        <p><input type="submit" value="Post"></p>
-    </form>
+
+        {{end}}
+    </div>
+</header>
+
+<section class="section">
+   <div class="container">
+    <div class="post">
+        <h1>Post Creation Workshop</h1>
+        <form class="form" action="/create" method="POST">
+            <div>
+                <label>Category</label>
+                <input type="text" name="thread" placeholder="E.g.: music, art ...">
+                <label for="title">Title</label>
+                <input type="text" name="title">
+            </div>
+            <div>
+                <textarea class="textarea" name="postContent" placeholder="What's new?"></textarea>
+                <button class="btn" type="submit">Post</button>  
+            </div>
+        </form>
+    </div>
+    </div>
+</section>
 </body>
 </html>

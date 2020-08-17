@@ -27,7 +27,7 @@
     padding: 10px;
     float: right;
     margin-top: 17px;
-    display: block;
+
 }
 
 
@@ -74,12 +74,6 @@
     margin: 130px auto;
 }
 
-.posts {
-    margin: 40px auto 0 auto;
-    display: block;
-    width: 100%;
-}
-
 .post {
     margin: 40px auto 0 auto;
     display: block;
@@ -87,9 +81,30 @@
     max-width: 600px
 }
 
+
+
+.tag {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: #28B78D;
+}
+
+.tag.comments {
+    margin-top: 40px;
+}
+
+.info {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    color: #243743;
+}
+
 .post_top {
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 30px;
 }
 
 .avatar {
@@ -102,29 +117,22 @@
 
 .author {
     font-family: 'Roboto', sans-serif;
-    font-weight: 300;
-    font-size: 14px;
-}
-
-.title {
-    font-family: 'Roboto', sans-serif;
     font-weight: 700;
-    font-size: 40px;
-    text-transform: capitalize;
-    line-height: 40px;
-    text-decoration: none;
-    color: #28B78D;
-    transition: color .1s linear;
-    display: block;
+    font-size: 14px;
+    color: #243743;
 }
 
-.title:hover {
+.date {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    font-style: italic;
     color: #243743;
 }
 
 .post_bottom {
     border-left: 1px solid #28B78D;
-    padding-left: 90px;
+    padding-left: 60px;
     margin-top: 10px;
     display: block;
 }
@@ -132,7 +140,7 @@
 .content {
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .content_info {
@@ -224,14 +232,33 @@
     font-size: 14px;
 }
 
-.date  {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 300;
-    font-size: 12px;
-    font-style: italic;
+.comment_area {
+    margin-top: 40px;
 }
 
+.textarea {
+    display: block;
+    resize: none;
+    width: 400px;
+    height: 150px;
+}
+
+button.btn{
+    color: #FAFAFA;
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    background-color: #28B78D;
+    margin-top: 10px; 
+    border-radius: 5px;
+    border : none;
+    cursor: pointer;
+    max-width: 200px;
+    min-width: 150px;
+    height: 50px;
+    transition: background-color .2s linear;
+}
+
+button.btn:hover {
+    background-color: #166951;
+}
 

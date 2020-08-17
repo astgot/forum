@@ -7,25 +7,35 @@
     <link rel="stylesheet" href="../css/login.css">
 </head>
 <body>
-    <form action="/login" method="POST">
-        <div class="container">
-            <p>
-                <label for="uname"><b>Ник или Эмэйл</b></label>
-                <input type="text" placeholder="Введите ник или эмэйл" name="Username" required>
+
+    <header class="header">
+    <div class="container">
+        <div class="forum">
+        <h1><a href="/">FORUM</a></h1>
+        </div>        
+    </div>
+</header>
+
+<section class="section">
+   <div class="container">
+        <form class="form" action="/login" method="POST">
+                <p>
+                <label for="uname"><b>Username or E-mail</b></label>
+                <input type="text" placeholder="" name="Username" required>
             </p>
             <p>
-                <label for="psw"><b>Пароль</b></label>
-                <input type="password" placeholder="Введите Пароль" name="Password" required>
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="" name="Password" required>
             </p>
             <p>
             <label>
-                <input type="checkbox" checked="checked" name="remember"> Запомнить меня
+                <input type="checkbox" checked="checked" name="remember"> Remember me
               </label>
             </p>
-            <a href="/main"><button type="submit">Войти</button></a>
-            <a href="/signup"><button type="submit">Регистрация</button></a>
-        </div>
-    </form>
-    
+            <a href="/main"><button type="submit">Login</button></a>
+            <a href="/signup"><button type="submit">Register</button></a>
+        </form>
+    </div>
+</section>
 </body>
 </html>
