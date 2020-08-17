@@ -41,15 +41,15 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			thread.Name = r.PostFormValue("thread")
 			threads := CheckNumberOfThreads(thread.Name)
 			post.CreationDate = time.Now().Format("January 2 15:04")
-			post.PostID, _ = m.db.InsertPostInfo(post)
-			if post.PostID == -1 {
-				fmt.Println("post.PostID == -1")
+			post.ID, _ = m.db.InsertPostInfo(post)
+			if post.ID == -1 {
+				fmt.Println("post.ID == -1")
 				http.Error(w, "Invalid input", http.StatusBadRequest)
 				return
 			}
 			// If post has several threads, to this post will attach this info
 			for _, threadName := range threads {
-				m.db.InsertThreadInfo(threadName, post.PostID)
+				m.db.InsertThreadInfo(threadName, post.ID)
 			}
 
 			http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -103,7 +103,10 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			}
 			postAttr.Threads, _ = m.db.GetThreadOfPost(int64(id))
 			singlePost.PostInfo = append(singlePost.PostInfo, postAttr)
+			singlePost.Post.ID = int64(id)
 			tpl.ExecuteTemplate(w, "postView.html", singlePost)
+			singlePost.Post = nil
+			singlePost.PostInfo = nil
 			return
 		}
 		postAttr := &PostAttr{}
@@ -115,14 +118,22 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			http.Error(w, "The post not found", http.StatusNotFound)
 			return
 		}
+
 		postAttr.Comments, err = m.db.GetCommentsOfPost(int64(id))
+		commentRate := model.NewCommentRating()
+		for i := 0; i < len(postAttr.Comments); i++ {
+			commentRate = m.db.GetRateCountOfComment(postAttr.Comments[i].CommentID, int64(id))
+			postAttr.Comments[i].LikeCnt = commentRate.LikeCount
+			postAttr.Comments[i].DislikeCnt = commentRate.DislikeCount
+		}
 		postAttr.Threads, _ = m.db.GetThreadOfPost(int64(id))
 		singlePost.PostInfo = append(singlePost.PostInfo, postAttr)
-		tpl.ExecuteTemplate(w, "postView.html", singlePost)
+		singlePost.Post.ID = int64(id)
 		if r.Method == "POST" {
-			comment := model.NewComment()
 			r.ParseForm()
+			comment := model.NewComment()
 			comment.Content = r.PostFormValue("comment")
+			// fmt.Println(comment.Content, "<---")
 			comment.CreationDate = time.Now().Format("January 2 15:04")
 			comment.PostID = int64(id)
 			comment.Author = user.Username
@@ -131,9 +142,18 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 				http.Error(w, "Something went wrong", http.StatusInternalServerError)
 				return
 			}
-			postID := strconv.Itoa(id)
-			http.Redirect(w, r, "/post?id="+postID, http.StatusSeeOther)
+			// w.WriteHeader(http.StatusCreated)
+			// postID := strconv.Itoa(id)
+			// http.Redirect(w, r, "/post?id="+postID, http.StatusOK)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+		} else {
+			tpl.ExecuteTemplate(w, "postView.html", singlePost)
+
 		}
+		singlePost.Post = nil
+		singlePost.PostInfo = nil
+		singlePost.AuthUser = nil
+
 	}
 }
 

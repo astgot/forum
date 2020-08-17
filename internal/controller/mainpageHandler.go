@@ -14,7 +14,7 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 		Post     *model.Post
 		Threads  []*model.Thread
 		PostRate *model.PostRating
-		Comments []*model.Comments
+		// Comments []*model.Comments
 	}
 	var mainPage struct {
 		AuthUser   *model.Users
@@ -33,33 +33,35 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 			// if user is guest, retrieve all posts for displaying
 			for _, post := range posts {
 				guest := &PostRaw{}
-				guest.Comments, _ = m.db.GetCommentsOfPost(post.PostID)
+				// guest.Comments, _ = m.db.GetCommentsOfPost(post.PostID)
 				// guest.Author, _ = m.db.FindByUserID(post.UserID)
 				guest.Post = post
-				guest.Threads, _ = m.db.GetThreadOfPost(post.PostID)
-				guest.PostRate = m.db.GetRateCountOfPost(post.PostID)
+				guest.Threads, _ = m.db.GetThreadOfPost(post.ID)
+				guest.PostRate = m.db.GetRateCountOfPost(post.ID)
 				mainPage.PostScroll = append(mainPage.PostScroll, guest)
 			}
 			tpl.ExecuteTemplate(w, "main.html", mainPage)
+			mainPage.PostScroll = nil
 			return
-
 		}
 		// if User is authenticated
 		user, _ := m.db.GetUserByCookie(cookie.Value)
 		mainPage.AuthUser = user
-		auth := &PostRaw{}
 		for _, post := range posts {
-			auth.Post, _ = m.db.GetPostByPID(post.PostID)
-			auth.Threads, err = m.db.GetThreadOfPost(post.PostID)
+			auth := &PostRaw{}
+			// auth.Comments, _ = m.db.GetCommentsOfPost(post.PostID)
+			auth.Post = post
+			auth.Threads, err = m.db.GetThreadOfPost(post.ID)
 			if err != nil {
 				http.Error(w, "Threads retrieving error", http.StatusInternalServerError)
 				return
 			}
+			auth.PostRate = m.db.GetRateCountOfPost(post.ID)
 			mainPage.PostScroll = append(mainPage.PostScroll, auth)
-
 		}
-
 		tpl.ExecuteTemplate(w, "main.html", mainPage)
-
+		// prevent from posts doubling
+		mainPage.AuthUser = nil
+		mainPage.PostScroll = nil
 	}
 }
