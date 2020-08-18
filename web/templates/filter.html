@@ -24,7 +24,16 @@
             <label class="username">{{ .AuthUser.Username }}</label>
             <a href="/logout"><button type="submit" class="signout"><i class="fas fa-sign-out-alt"></i></button></a>
         </div>
+        <!-- Else guest, buttons "log in" and "sign up" are available -->
+        {{ else }}
+        <div class="bottom notsigned" id="notsigned">    
+            <a href="/login"> <button type="submit">Login</button></a>
+            <a href="/signup"><button type="submit">Register</button></a> 
+        </div>
         {{ end }}
+        <form action="/filter?section=search" method="POST">
+            <input type="text" name="search" placeholder="Search by Threads">
+        </form>
     </div>
 </header>
 
