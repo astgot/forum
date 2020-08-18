@@ -133,7 +133,6 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			r.ParseForm()
 			comment := model.NewComment()
 			comment.Content = r.PostFormValue("comment")
-			// fmt.Println(comment.Content, "<---")
 			comment.CreationDate = time.Now().Format("January 2 15:04")
 			comment.PostID = int64(id)
 			comment.Author = user.Username
@@ -142,10 +141,9 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 				http.Error(w, "Something went wrong", http.StatusInternalServerError)
 				return
 			}
-			// w.WriteHeader(http.StatusCreated)
-			// postID := strconv.Itoa(id)
-			// http.Redirect(w, r, "/post?id="+postID, http.StatusOK)
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+
+			postID := strconv.Itoa(id)
+			http.Redirect(w, r, "/post?id="+postID, http.StatusSeeOther)
 		} else {
 			tpl.ExecuteTemplate(w, "postView.html", singlePost)
 
@@ -153,7 +151,6 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 		singlePost.Post = nil
 		singlePost.PostInfo = nil
 		singlePost.AuthUser = nil
-
 	}
 }
 
