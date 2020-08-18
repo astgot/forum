@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/astgot/forum/internal/model"
 )
@@ -69,4 +70,32 @@ func (d *Database) GetThreadByID(id int64) (*model.Thread, error) {
 		return nil, err
 	}
 	return thread, nil
+}
+
+// SearchThread ...
+func (d *Database) SearchThread(search string) ([]*model.Post, error) {
+	if err := d.Open(); err != nil {
+		return nil, err
+	}
+	threads := d.GetAllThreads()
+	threadIDs := []int64{}
+	// Collect all threads IDs by comparing thread Names with search query
+	for _, thread := range threads {
+		if ok := strings.Contains(thread.Name, search); ok {
+			threadIDs = append(threadIDs, thread.ID)
+		}
+	}
+	if len(threadIDs) == 0 {
+		return nil, nil
+	}
+	var result []*model.Post
+	for _, threadID := range threadIDs {
+		posts, err := d.FindPostsByThreadID(threadID)
+		if err != nil {
+			fmt.Println("SearchThread", err.Error())
+			return nil, err
+		}
+		result = append(result, posts...)
+	}
+	return result, nil
 }

@@ -48,3 +48,39 @@ func (d *Database) GetThreadOfPost(postID int64) ([]*model.Thread, error) {
 
 	return threads, nil
 }
+
+// GetPostIDsByTID ...
+func (d *Database) GetPostIDsByTID(tid int64) ([]int64, error) {
+	postIDs := []int64{}
+	query, err := d.db.Query("SELECT postID FROM PostMapping WHERE threadID=? ORDER BY postID DESC", tid)
+	if err != nil {
+		fmt.Println("GetPostIDsByTID", err.Error())
+		return nil, err
+	}
+	defer query.Close()
+	for query.Next() {
+		var id int64
+		if err := query.Scan(&id); err != nil {
+			fmt.Println("GetPostIDsByTID", err.Error())
+			return nil, err
+		}
+		postIDs = append(postIDs, id)
+	}
+	return postIDs, nil
+}
+
+// FindPostsByThreadID ...
+func (d *Database) FindPostsByThreadID(tid int64) ([]*model.Post, error) {
+	// вытаскиваю все пид
+	postIDs, err := d.GetPostIDsByTID(tid)
+	if err != nil {
+		fmt.Println("FindPostsByThreadID", err.Error())
+		return nil, err
+	}
+	var posts []*model.Post
+	for _, postID := range postIDs {
+		post, _ := d.GetPostByPID(postID)
+		posts = append(posts, post)
+	}
+	return posts, nil
+}

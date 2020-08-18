@@ -21,6 +21,8 @@
         {{if .AuthUser}}
 
         <div class="bottom signed" id='signed'>
+            <a href="/filter?section=my_posts" target="_blank" rel="noopener noreferrer">My posts</a>
+            <a href="/filter?section=liked" target="_blank" rel="noopener noreferrer">Rated posts</a>
             <a href="/create"><button type="submit">Create a post</button></a>
             <label class="username">{{ .AuthUser.Username }}</label>
             <a href="/logout"><button type="submit" class="signout"><i class="fas fa-sign-out-alt"></i></button></a>
@@ -32,6 +34,10 @@
             <a href="/signup"><button type="submit">Register</button></a> 
         </div>
         {{ end }}
+        <!-- Search -->
+        <form action="/filter?section=search" method="POST">
+            <input type="text" name="search" placeholder="Search by Threads">
+        </form>
     </div>
 </header>
 
@@ -68,6 +74,8 @@
                     </div>
                 </div>
                 {{end}}
+                {{ else }}
+                <h1>{{.Error}}</h1>
             {{end}}
         </div>
     </div>

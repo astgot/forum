@@ -135,3 +135,37 @@ func (d *Database) UpdateRateOfPost(rate *model.PostRating, uid int64) bool {
 }
 
 // If server delete like, and after it becomes [0 0] need to delete row from PostRating
+
+// GetRatedPostsByUID ...
+func (d *Database) GetRatedPostsByUID(uid int64) ([]*model.Post, error) {
+	if err := d.Open(); err != nil {
+		return nil, err
+	}
+	var posts []*model.Post
+	postIDs := []int64{}
+	query, err := d.db.Query("SELECT postID FROM RateUserPost WHERE userID=? AND kind=1 ORDER BY postID DESC", uid)
+	if err != nil {
+		fmt.Println(err.Error(), "GetRatedPostsByUID")
+		return nil, err
+	}
+	defer query.Close()
+	for query.Next() {
+		var id int64
+		if err := query.Scan(&id); err != nil {
+			fmt.Println(err.Error(), "GetRatedPostsByUID")
+			return nil, err
+		}
+		// Save all rated post ID to array
+		postIDs = append(postIDs, id)
+	}
+	// Get full info of post by PostID
+	for _, postID := range postIDs {
+		post, err := d.GetPostByPID(postID)
+		if err != nil {
+			fmt.Println(err.Error(), "GetRatedPostsByUID")
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
+}

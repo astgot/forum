@@ -65,5 +65,29 @@ func (d *Database) GetPostByPID(pid int64) (*model.Post, error) {
 	); err != nil {
 		return nil, err
 	}
+	post.ID = pid
 	return post, nil
+}
+
+// GetPostsByUID ...
+func (d *Database) GetPostsByUID(uid int64) ([]*model.Post, error) {
+	var posts []*model.Post
+	if err := d.Open(); err != nil {
+		return nil, err
+	}
+	query, err := d.db.Query("SELECT * FROM Posts WHERE user_id=? ORDER BY post_id DESC", uid)
+	if err != nil {
+		fmt.Println("GetPostsByUID error", err.Error())
+		return nil, err
+	}
+	defer query.Close()
+	for query.Next() {
+		post := model.NewPost()
+		if err := query.Scan(&post.ID, &post.UserID, &post.Author, &post.Title, &post.Content, &post.CreationDate); err != nil {
+			fmt.Println(err.Error(), "GetPostsByUID error")
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
 }
