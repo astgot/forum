@@ -125,7 +125,7 @@ func (m *Multiplexer) FilterHandler() http.HandlerFunc {
 		if len(posts) == 0 {
 			filter.Error = "No results for \"" + search + "\""
 		} else {
-			filter.Error = "Search results for \"" + search + "\""
+			filter.Error = filter.Section
 		}
 		for _, post := range posts {
 			result := &PostRaw{}
