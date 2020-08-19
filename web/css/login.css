@@ -23,6 +23,11 @@
     text-decoration: none;
 }
 
+.bottom{
+    padding: 10px;
+    float: right;
+    margin-top: 17px;
+}
 
 .section {
     width: 100%;

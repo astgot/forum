@@ -1,7 +1,10 @@
 .container {
     width: 100%;
-    
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap; 
     margin: 0 auto;
+    align-items: center;
 }
 
 .header{
@@ -9,9 +12,12 @@
     position: absolute;
     top: 0;
     left: 0;
-    background: #243743;   
+    background: #243743; 
+
 }
-.forum{ 
+.forum{   
+    width: 100%;
+    max-width: 200px;
     font-family: 'Roboto', sans-serif;
     font-size: 20px;
     display:inline-block;
@@ -23,11 +29,40 @@
     text-decoration: none;
 }
 
+
 .bottom{
     padding: 10px;
-    float: right;
-    margin-top: 17px;
-    display: block;
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    right: 0;
+    align-items: center;
+}
+
+.search {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+   
+    margin: 0 20px;
+}
+
+.search input {
+    width: 100%;
+    max-width: 600%; 
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    border: 3px solid #28B78D;  
+    border-radius: 20px;
+    padding: 10px;
+}
+
+input:focus, button:focus {
+    outline: none;
+}
+
+.search i {
+    
 }
 
 
@@ -40,7 +75,7 @@
     border-radius: 5px;
     border : none;
     cursor: pointer;
-    width: 150px;
+    width: 130px;
     height: 50px;
     transition: background-color .2s linear;
 }
@@ -49,6 +84,7 @@
     font-family: 'Roboto', sans-serif;
     font-size: 22px;
     color: white;
+    margin-left: 10px;
 }
 
 .bottom button.signout{
@@ -65,9 +101,23 @@
     transition: background-color .2s linear;
 }
 
+.bottom button.btnsrch {
+    color: #FAFAFA;
+    font-family: 'Roboto', sans-serif;
+    background-color: #28B78D;
+    margin-left: -42px;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 50px;
+    height: 48px;
+    transition: background-color .2s linear;  
+}
+
 .bottom button:hover {
     background-color: #166951;
 }
+
+
 
 .section {
     width: 100%;
@@ -75,7 +125,7 @@
 }
 
 .posts {
-    margin: 40px auto 0 auto;
+    margin: 0 auto;
     display: block;
     width: 100%;
 }
@@ -235,3 +285,30 @@
 }
 
 
+.srchres {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.tag {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: #28B78D;
+}
+
+.tag.comments {
+    margin-top: 40px;
+}
+
+.info {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 900;
+    font-size: 40px;
+    color: #243743;
+    text-decoration: underline;
+    text-decoration-color: #28B78D;
+    
+}
