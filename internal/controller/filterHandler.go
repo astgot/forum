@@ -25,18 +25,25 @@ func (m *Multiplexer) FilterHandler() http.HandlerFunc {
 		Error      string
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/filter" {
+			WarnMessage(w, "404 Not Found")
+			// http.Error(w, "404 Not Found", http.StatusNotFound)
+			return
+		}
 
 		section := r.URL.Query().Get("section")
 		if section == "my_posts" {
 
 			c, err := r.Cookie("authenticated")
 			if err != nil {
-				http.Error(w, "You need to be authenticated", http.StatusUnauthorized)
+				WarnMessage(w, "You need to be authorized")
+				// http.Error(w, "You need to be authenticated", http.StatusUnauthorized)
 				return
 			}
 			user, err := m.db.GetUserByCookie(c.Value)
 			if err != nil {
-				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+				WarnMessage(w, "Something went wrong")
+				// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 				return
 			}
 			// Add function to find posts of users by their ID
@@ -44,7 +51,8 @@ func (m *Multiplexer) FilterHandler() http.HandlerFunc {
 			 */
 			posts, err := m.db.GetPostsByUID(user.ID)
 			if err != nil {
-				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+				WarnMessage(w, "Something went wrong")
+				// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 				return
 			}
 			for _, post := range posts {
@@ -65,12 +73,14 @@ func (m *Multiplexer) FilterHandler() http.HandlerFunc {
 		} else if section == "liked" {
 			c, err := r.Cookie("authenticated")
 			if err != nil {
-				http.Error(w, "You need to be authenticated", http.StatusUnauthorized)
+				WarnMessage(w, "You need to be authorized")
+				// http.Error(w, "You need to be authenticated", http.StatusUnauthorized)
 				return
 			}
 			user, err := m.db.GetUserByCookie(c.Value)
 			if err != nil {
-				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+				WarnMessage(w, "Something went wrong")
+				// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 				return
 			}
 			// Add function to find post rated by the user
@@ -78,7 +88,8 @@ func (m *Multiplexer) FilterHandler() http.HandlerFunc {
 			 */
 			posts, err := m.db.GetRatedPostsByUID(user.ID)
 			if err != nil {
-				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+				WarnMessage(w, "Something went wrong")
+				// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 				return
 			}
 			for _, post := range posts {
@@ -106,7 +117,8 @@ func (m *Multiplexer) FilterHandler() http.HandlerFunc {
 		if err == nil {
 			user, err := m.db.GetUserByCookie(c.Value)
 			if err != nil {
-				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+				WarnMessage(w, "Something went wrong")
+				// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 				return
 			}
 			filter.AuthUser = user
@@ -118,7 +130,8 @@ func (m *Multiplexer) FilterHandler() http.HandlerFunc {
 		*/
 		posts, err := m.db.SearchThread(search)
 		if err != nil {
-			http.Error(w, "Something went wrong", http.StatusInternalServerError)
+			WarnMessage(w, "Something went wrong")
+			// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 			return
 		}
 		// If search doesn't give any results

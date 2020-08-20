@@ -9,6 +9,11 @@ import (
 
 var tpl = template.Must(template.ParseGlob("web/templates/*"))
 
+// Warning ...
+var Warning struct {
+	Warn string
+}
+
 // Multiplexer ....
 type Multiplexer struct {
 	Mux *http.ServeMux
@@ -21,4 +26,10 @@ func NewMux() *Multiplexer {
 		Mux: http.NewServeMux(),
 		db:  database.NewDB(database.NewConfig()),
 	}
+}
+
+// WarnMessage ...
+func WarnMessage(w http.ResponseWriter, warn string) {
+	Warning.Warn = warn
+	tpl.ExecuteTemplate(w, "error.html", Warning)
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/astgot/forum/internal/model"
@@ -23,7 +24,8 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 	// Here we can create our own struct, which is usable only here
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" && r.URL.Path != "/main" {
-			http.Error(w, "404 Not Found", http.StatusNotFound)
+			WarnMessage(w, "404 Not Found")
+			// http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
 		posts := m.GetAllPosts(w)
@@ -53,7 +55,8 @@ func (m *Multiplexer) MainHandle() http.HandlerFunc {
 			auth.Post = post
 			auth.Threads, err = m.db.GetThreadOfPost(post.ID)
 			if err != nil {
-				http.Error(w, "Threads retrieving error", http.StatusInternalServerError)
+				WarnMessage(w, "Something went wrong")
+				fmt.Println("Threads retrieving error")
 				return
 			}
 			auth.PostRate = m.db.GetRateCountOfPost(post.ID)

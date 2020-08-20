@@ -11,7 +11,8 @@ func (m *Multiplexer) SignupHandle() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/signup" {
-			http.Error(w, "404 Not Found", http.StatusNotFound)
+			WarnMessage(w, "404 Not Found")
+			// http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
 		if r.Method == "GET" {
@@ -55,7 +56,8 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/login" {
-			http.Error(w, "404 Not Found", http.StatusNotFound)
+			WarnMessage(w, "404 Not Found")
+			// http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
 
@@ -74,23 +76,27 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 			if check.unameOrEmail {
 				u, err := m.db.FindByEmail(login.Username)
 				if err != nil {
-					http.Error(w, err.Error(), http.StatusUnauthorized)
+					WarnMessage(w, "Invalid credentials")
+					// http.Error(w, err.Error(), http.StatusUnauthorized)
 					return
 				}
 				check.auth = ComparePassword(u.EncryptedPwd, login.Password)
 				if !check.auth {
-					http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+					WarnMessage(w, "Invalid credentials")
+					// http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 					return
 				}
 			} else if !check.unameOrEmail {
 				u, err := m.db.FindByUsername(login.Username)
 				if err != nil {
-					http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+					WarnMessage(w, "Invalid credentials")
+					// http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 					return
 				}
 				check.auth = ComparePassword(u.EncryptedPwd, login.Password)
 				if !check.auth {
-					http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+					WarnMessage(w, "Invalid credentials")
+					// http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 					return
 				}
 
@@ -108,7 +114,8 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 // ConfirmHandler --> /confirmation
 func ConfirmHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/confirmation" {
-		http.Error(w, "404 Not Found", http.StatusNotFound)
+		WarnMessage(w, "404 Not Found")
+		// http.Error(w, "404 Not Found", http.StatusNotFound)
 		return
 	}
 	tpl.ExecuteTemplate(w, "confirmation.html", nil)

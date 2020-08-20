@@ -13,7 +13,8 @@ func (m *Multiplexer) RateHandler() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/rate" {
-			http.Error(w, "Not Found", http.StatusNotFound)
+			WarnMessage(w, "404 Not Found")
+			// http.Error(w, "Not Found", http.StatusNotFound)
 			return
 		}
 		var (
@@ -22,16 +23,17 @@ func (m *Multiplexer) RateHandler() http.HandlerFunc {
 		)
 		cookie, err := r.Cookie("authenticated")
 		if err != nil {
-			http.Error(w, "You need to authorize", http.StatusForbidden)
+			WarnMessage(w, "You need to authorized")
+			// http.Error(w, "You need to authorize", http.StatusForbidden)
 			return
-			// maybe make template showing to authorize firstly
 		}
 
 		id, err := strconv.Atoi(r.URL.Query().Get("post_id"))
 		if err != nil {
 			id, err = strconv.Atoi(r.URL.Query().Get("comment_id"))
 			if err != nil {
-				http.Error(w, "Invalid parameter", http.StatusBadRequest)
+				WarnMessage(w, "You are walking the wrong way")
+				// http.Error(w, "Invalid parameter", http.StatusBadRequest)
 				return
 			}
 			isPost = false
@@ -45,7 +47,8 @@ func (m *Multiplexer) RateHandler() http.HandlerFunc {
 		user, err := m.db.GetUserByCookie(cookie.Value)
 		if err != nil {
 			fmt.Println("GetUserByCookie rateHandler.go error")
-			http.Error(w, "Something went wrong", http.StatusInternalServerError)
+			WarnMessage(w, "Something went wrong")
+			// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 			return
 		}
 
@@ -54,7 +57,8 @@ func (m *Multiplexer) RateHandler() http.HandlerFunc {
 			like.Like = Islike
 			_, err := m.db.GetPostByPID(int64(id))
 			if err != nil {
-				http.Error(w, "The post not found", http.StatusBadRequest)
+				WarnMessage(w, "The post not found")
+				// http.Error(w, "The post not found", http.StatusBadRequest)
 				fmt.Println("GetPostByPID error")
 				return
 			}
@@ -69,12 +73,14 @@ func (m *Multiplexer) RateHandler() http.HandlerFunc {
 			if isRated {
 				if ok := m.db.UpdateRateOfPost(like, user.ID); !ok {
 					fmt.Println("DeleteRateOfPost error")
-					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					WarnMessage(w, "Something went wrong")
+					// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 					return
 				}
 			} else {
 				if ok := m.db.AddRateToPost(like, user.ID); !ok {
-					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					WarnMessage(w, "Something went wrong")
+					// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 					fmt.Println("AddRatePost() error")
 					return
 				}
@@ -86,7 +92,8 @@ func (m *Multiplexer) RateHandler() http.HandlerFunc {
 			like.Like = Islike
 			comment, err := m.db.GetCommentByID(int64(id))
 			if err != nil {
-				http.Error(w, "The comment not found", http.StatusBadRequest)
+				WarnMessage(w, "The comment not found")
+				// http.Error(w, "The comment not found", http.StatusBadRequest)
 				fmt.Println("GetCommentByID error")
 				return
 			}
@@ -96,13 +103,15 @@ func (m *Multiplexer) RateHandler() http.HandlerFunc {
 			if isRated {
 				if ok := m.db.UpdateRateOfComment(like, user.ID); !ok {
 					fmt.Println("UpdateRateOfComment error")
-					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					WarnMessage(w, "Something went wrong")
+					// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 					return
 				}
 
 			} else {
 				if ok := m.db.AddRateToComment(like, user.ID); !ok {
-					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					WarnMessage(w, "Something went wrong")
+					// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 					fmt.Println("AddRateToComment error")
 					return
 				}

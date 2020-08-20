@@ -13,20 +13,22 @@ import (
 func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/create" {
-			http.Error(w, "404 Not Found", http.StatusNotFound)
+			WarnMessage(w, "404 Not Found")
 			return
 		}
 		// Check user authorization
 		cookie, err := r.Cookie("authenticated")
 		if err != nil {
-			http.Error(w, "Not Authorized", http.StatusUnauthorized)
+			WarnMessage(w, "You need to be authorized")
+			// http.Error(w, "Not Authorized", http.StatusUnauthorized)
 			return
-			// OR tpl.ExecuteTemplate(w, "error.html", nil) // need to add error "Need to make authorization"
 		}
 
 		u, err := m.db.GetUserByCookie(cookie.Value)
 		if err != nil {
-			http.Error(w, "Something went wrong", http.StatusInternalServerError) // Check workflow of DB
+			WarnMessage(w, "Something went wrong")
+			fmt.Println("GetUserByCookie error")
+			// http.Error(w, "Something went wrong", http.StatusInternalServerError) // Check workflow of DB
 			return
 		}
 		// Gathering post data
@@ -80,7 +82,8 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 		id, errID := strconv.Atoi(r.URL.Query().Get("id"))
 		if errID != nil {
 			fmt.Println("errID != nil")
-			http.Error(w, "Invalid input", http.StatusBadRequest)
+			WarnMessage(w, "Invalid input id")
+			// http.Error(w, "Invalid input", http.StatusBadRequest)
 			return
 		}
 
@@ -91,7 +94,8 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			singlePost.Post, err = m.db.GetPostByPID(int64(id))
 			if err != nil {
 				fmt.Println("Error on PostView() function")
-				http.Error(w, "The post not found", http.StatusNotFound)
+				WarnMessage(w, "The post not found")
+				// http.Error(w, "The post not found", http.StatusNotFound)
 				return
 			}
 			postAttr.Comments, err = m.db.GetCommentsOfPost(int64(id))
@@ -115,7 +119,8 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 		singlePost.Post, err = m.db.GetPostByPID(int64(id))
 		if err != nil {
 			fmt.Println("Error on PostView() function")
-			http.Error(w, "The post not found", http.StatusNotFound)
+			WarnMessage(w, "The post not found")
+			// http.Error(w, "The post not found", http.StatusNotFound)
 			return
 		}
 
@@ -138,7 +143,8 @@ func (m *Multiplexer) PostView() http.HandlerFunc {
 			comment.Author = user.Username
 			if ok := m.db.AddComment(comment); !ok {
 				fmt.Println("AddComment error")
-				http.Error(w, "Something went wrong", http.StatusInternalServerError)
+				WarnMessage(w, "Something went wrong")
+				// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 				return
 			}
 
@@ -159,7 +165,8 @@ func (m *Multiplexer) GetAllPosts(w http.ResponseWriter) []*model.Post {
 
 	posts, err := m.db.GetPosts()
 	if err != nil {
-		http.Error(w, "Something went wrong (Test Post)", http.StatusInternalServerError)
+		WarnMessage(w, "Something went wrong")
+		// http.Error(w, "Something went wrong (Test Post)", http.StatusInternalServerError)
 		return nil
 	}
 	return posts
