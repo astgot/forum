@@ -17,13 +17,11 @@
         <h1><a href="/">FORUM</a></h1>
         </div>
 
-        {{if .AuthUser}}
-
+        {{if .Username}}
         <div class="bottom signed">
-            <label class="username">{{ .AuthUser.Username }}</label>
+            <label class="username">{{ .Username }}</label>
             <a href="/logout"><button type="submit" class="signout"><i class="fas fa-sign-out-alt"></i></button></a>
         </div>
-
         {{end}}
     </div>
 </header>
@@ -36,11 +34,20 @@
             <div>
                 <label>Category</label>
                 <input type="text" name="thread" placeholder="E.g.: music, art ...">
+                {{ with .Errors.Category }}
+                <p class="empty">{{ . }}</p>
+                {{ end }}
                 <label for="title">Title</label>
                 <input type="text" name="title">
+                {{ with .Errors.Title }}
+                <p class="empty">{{ . }}</p>
+                {{ end }}
             </div>
             <div>
                 <textarea class="textarea" name="postContent" placeholder="What's new?"></textarea>
+                {{ with .Errors.Content }}
+                <p class="empty">{{ . }}</p>
+                {{ end }}
                 <button class="btn" type="submit">Post</button>  
             </div>
         </form>

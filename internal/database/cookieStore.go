@@ -35,7 +35,7 @@ func (d *Database) DeleteCookieFromDB(cookieValue string) error {
 
 }
 
-//GetUserByCookie ...
+// GetUserByCookie ...
 func (d *Database) GetUserByCookie(cookieValue string) (*model.Users, error) {
 	var userID int64
 	if err := d.db.QueryRow("SELECT userID from Sessions WHERE cookieValue = ?", cookieValue).Scan(&userID); err != nil {
@@ -49,3 +49,15 @@ func (d *Database) GetUserByCookie(cookieValue string) (*model.Users, error) {
 }
 
 /*When cookie session inserts into DB, userID repeats in the table Sessions, need to delete his old record */
+
+// IsUserAuthenticated ...
+func (d *Database) IsUserAuthenticated(u *model.Users) error {
+	var cookieValue string
+	if err := d.db.QueryRow("SELECT cookieValue FROM Sessions WHERE userID = ?", u.ID).Scan(&cookieValue); err != nil {
+		return nil
+	}
+	if err := d.DeleteCookieFromDB(cookieValue); err != nil {
+		return err
+	}
+	return nil
+}

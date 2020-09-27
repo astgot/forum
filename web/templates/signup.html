@@ -28,26 +28,26 @@
           <label for="lastname"><b>Last name</b></label>
           <input type="text" placeholder="" name="Lastname" required>
           {{ with .Errors.FLName }}
-          <p>{{ . }}</p>
+          <p class="error">{{ . }}</p>
           {{ end }}
           <label for="uname"><b>Username</b></label>
           <input type="text" placeholder="" name="Username" required>
           {{ with .Errors.Username }}
-          <p>{{ . }}</p>
+          <p class="error">{{ . }}</p>
           {{ end }}
           <label for="email"><b>E-mail</b></label>
           <input type="email" placeholder="" name="Email" required>
           {{ with .Errors.Email }}
-          <p>{{ . }}</p>
+          <p class="error">{{ . }}</p>
           {{ end }}
           <label for="psw"><b>Password</b></label>
           <input type="password" placeholder="" name="Password" required>
           {{ with .Errors.Password }}
-          <p>{{ . }}</p>
+          <p class="error">{{ . }}</p>
           {{ end }}
           <input type="password" placeholder="Repeat a password" name="Confirm" required>
           {{ with .Errors.Confirm }}
-          <p>{{ . }}</p>
+          <p class="error">{{ . }}</p>
           {{ end }}
           <button type="submit">Register</button>
           <label>

@@ -15,6 +15,11 @@ func (m *Multiplexer) SignupHandle() http.HandlerFunc {
 			// http.Error(w, "404 Not Found", http.StatusNotFound)
 			return
 		}
+		_, err := r.Cookie("authenticated")
+		if err == nil {
+			WarnMessage(w, "You are already authorized")
+			return
+		}
 		if r.Method == "GET" {
 			tpl.ExecuteTemplate(w, "signup.html", nil)
 		} else if r.Method == "POST" {
@@ -37,7 +42,18 @@ func (m *Multiplexer) SignupHandle() http.HandlerFunc {
 			user.EncryptedPwd = encryptPass   // fill with Encrypted Password
 			newUser, err := m.db.Create(user) // Sending
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+				// Output errors, if username or e-mail is busy
+				user.Errors = make(map[string]string)
+				if err.Error() == "UNIQUE constraint failed: Users.email" {
+					user.Errors["Email"] = "That e-mail is already taken, please use another"
+				} else if err.Error() == "UNIQUE constraint failed: Users.username" {
+					user.Errors["Username"] = "That username is already taken, please use another"
+				} else {
+					WarnMessage(w, "Something went wrong")
+					return
+					// http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+				}
+				tpl.ExecuteTemplate(w, "signup.html", user)
 				return
 			}
 			m.AddSession(w, "guest", newUser) // guest session
@@ -58,6 +74,11 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 		if r.URL.Path != "/login" {
 			WarnMessage(w, "404 Not Found")
 			// http.Error(w, "404 Not Found", http.StatusNotFound)
+			return
+		}
+		_, err := r.Cookie("authenticated")
+		if err == nil {
+			WarnMessage(w, "You are already authorized")
 			return
 		}
 
@@ -102,7 +123,11 @@ func (m *Multiplexer) LoginHandle() http.HandlerFunc {
 
 			}
 			login.ID = m.db.GetUserID(login, check.unameOrEmail)
-			// fmt.Println("ID:", login.ID)
+			err = m.db.IsUserAuthenticated(login)
+			if err != nil {
+				WarnMessage(w, "Something went wrong")
+				return
+			}
 			m.AddSession(w, "authenticated", login) // Add cookie session after successful authentication
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -116,6 +141,11 @@ func ConfirmHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/confirmation" {
 		WarnMessage(w, "404 Not Found")
 		// http.Error(w, "404 Not Found", http.StatusNotFound)
+		return
+	}
+	_, err := r.Cookie("authenticated")
+	if err == nil {
+		WarnMessage(w, "You are already authorized")
 		return
 	}
 	tpl.ExecuteTemplate(w, "confirmation.html", nil)

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/astgot/forum/internal/model"
 	"golang.org/x/crypto/bcrypt"
@@ -54,12 +55,10 @@ func HashPassword(pwd string) string {
 
 // UnameOrEmail -->
 func UnameOrEmail(query string) bool {
-	for _, v := range query {
-		if v == '@' {
-			return true
-		}
+	if ok := strings.Contains(query, "@"); !ok {
+		return false
 	}
-	return false
+	return true
 }
 
 // ComparePassword --> Decrypt Password

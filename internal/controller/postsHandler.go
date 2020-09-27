@@ -31,6 +31,11 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			// http.Error(w, "Something went wrong", http.StatusInternalServerError) // Check workflow of DB
 			return
 		}
+		var Create struct {
+			Errors   map[string]string
+			Username string
+		}
+		Create.Username = u.Username
 		// Gathering post data
 		post := model.NewPost()
 		thread := model.NewThread()
@@ -41,6 +46,21 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			post.Title = r.PostFormValue("title")
 			post.Content = r.PostFormValue("postContent")
 			thread.Name = r.PostFormValue("thread")
+
+			Create.Errors = make(map[string]string)
+			if post.Title == "" {
+				Create.Errors["Title"] = "\"Title\" field is empty"
+				tpl.ExecuteTemplate(w, "postCreate.html", Create)
+				return
+			} else if post.Content == "" {
+				Create.Errors["Content"] = "\"Content\" field is empty"
+				tpl.ExecuteTemplate(w, "postCreate.html", Create)
+				return
+			} else if thread.Name == "" {
+				Create.Errors["Category"] = "\"Category\" field is empty"
+				tpl.ExecuteTemplate(w, "postCreate.html", Create)
+				return
+			}
 			threads := CheckNumberOfThreads(thread.Name)
 			post.CreationDate = time.Now().Format("January 2 15:04")
 			post.ID, _ = m.db.InsertPostInfo(post)
