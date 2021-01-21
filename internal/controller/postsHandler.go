@@ -45,6 +45,7 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			post.Author = u.Firstname + " " + u.Lastname + " aka " + "\"" + u.Username + "\""
 			post.Title = r.PostFormValue("title")
 			post.Content = r.PostFormValue("postContent")
+			// here to fix
 			thread.Name = r.PostFormValue("thread")
 
 			Create.Errors = make(map[string]string)
@@ -61,6 +62,7 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 				tpl.ExecuteTemplate(w, "postCreate.html", Create)
 				return
 			}
+			// get categories from checkbox (may be more than 1)
 			threads := CheckNumberOfThreads(thread.Name)
 			post.CreationDate = time.Now().Format("January 2 15:04")
 			post.ID, _ = m.db.InsertPostInfo(post)
@@ -73,7 +75,6 @@ func (m *Multiplexer) CreatePostHandler() http.HandlerFunc {
 			for _, threadName := range threads {
 				m.db.InsertThreadInfo(threadName, post.ID)
 			}
-
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		} else if r.Method == "GET" {

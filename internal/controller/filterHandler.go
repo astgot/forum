@@ -108,6 +108,7 @@ func (m *Multiplexer) FilterHandler() http.HandlerFunc {
 			filter.PostScroll = nil
 			return
 		}
+		/*ТУТ НУЖНО ИСПРАВИТЬ !!!!!*/
 
 		// Search by category
 		r.ParseForm()
@@ -123,7 +124,7 @@ func (m *Multiplexer) FilterHandler() http.HandlerFunc {
 			}
 			filter.AuthUser = user
 		}
-		filter.Section = "Search results for \"" + search + "\""
+		filter.Section = "Posts: \"" + search + "\""
 		/* 1)search that category in the table "Threads" (retrieve all threadID)
 		   2)search posts in the table "PostMapping" (retrieve all postID)
 		   3)show posts from table "Posts"

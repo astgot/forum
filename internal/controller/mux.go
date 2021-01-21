@@ -28,6 +28,29 @@ func NewMux() *Multiplexer {
 	}
 }
 
+// CreateHandlers ...
+func (m *Multiplexer) CreateHandlers() {
+	fs := http.FileServer(http.Dir("web/css"))
+	m.Mux.Handle("/css/", http.StripPrefix("/css/", fs))
+	m.Mux.HandleFunc("/", m.MainHandle())
+	m.Mux.HandleFunc("/signup", m.SignupHandle())
+	m.Mux.HandleFunc("/login", m.LoginHandle())
+	m.Mux.HandleFunc("/logout", m.LogoutHandle())
+	m.Mux.HandleFunc("/confirmation", ConfirmHandler)
+	m.Mux.HandleFunc("/create", m.CreatePostHandler())
+	m.Mux.HandleFunc("/post", m.PostView())
+	m.Mux.HandleFunc("/rate", m.RateHandler())
+	m.Mux.HandleFunc("/filter", m.FilterHandler())
+}
+
+// ConfigureDB ...
+func (m *Multiplexer) ConfigureDB() error {
+	if err := m.db.InitDB(); err != nil {
+		return err
+	}
+	return nil
+}
+
 // WarnMessage ...
 func WarnMessage(w http.ResponseWriter, warn string) {
 	Warning.Warn = warn
