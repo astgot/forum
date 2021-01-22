@@ -37,6 +37,7 @@ func (m *Multiplexer) CreateHandlers() {
 	m.Mux.HandleFunc("/login", m.LoginHandle())
 	m.Mux.HandleFunc("/logout", m.LogoutHandle())
 	m.Mux.HandleFunc("/confirmation", ConfirmHandler)
+	m.Mux.HandleFunc("/profile", m.ProfileHandler())
 	m.Mux.HandleFunc("/create", m.CreatePostHandler())
 	m.Mux.HandleFunc("/post", m.PostView())
 	m.Mux.HandleFunc("/rate", m.RateHandler())
